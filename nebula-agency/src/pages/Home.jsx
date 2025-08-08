@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { FiZap, FiLayers, FiTrendingUp } from 'react-icons/fi'
-import Galaxy from '../effects/Galaxy.jsx'
-import Cubes from '../animations/Cubes.jsx'
+import { lazy, Suspense } from 'react'
+import TrustBar from '../components/TrustBar.jsx'
+import Process from '../components/Process.jsx'
+import Testimonials from '../components/Testimonials.jsx'
+
+const Galaxy = lazy(() => import('../effects/Galaxy.jsx'))
+const Cubes = lazy(() => import('../animations/Cubes.jsx'))
 
 const features = [
   { icon: <FiZap />, title: 'Motion-first Design', text: 'Micro-interactions and cinematic transitions that feel alive.' },
@@ -15,7 +20,9 @@ export default function Home() {
     <div>
       <section className="section container">
         <div className="hero-stack card" style={{ position: 'relative', minHeight: '56vh', display: 'grid', placeItems: 'center', padding: '48px', overflow: 'hidden' }}>
-          <Galaxy hueShift={220} density={1.2} twinkleIntensity={0.35} glowIntensity={0.35} rotationSpeed={0.05} style={{ borderRadius: 'var(--radius-lg)' }} />
+          <Suspense fallback={null}>
+            <Galaxy hueShift={220} density={1.2} twinkleIntensity={0.35} glowIntensity={0.35} rotationSpeed={0.05} style={{ borderRadius: 'var(--radius-lg)' }} />
+          </Suspense>
           <div className="hero" style={{ position: 'relative', zIndex: 2 }}>
             <div className="badge">Futuristic Digital Agency</div>
             <h1 className="display">Build experiences that feel out of this world</h1>
@@ -29,11 +36,18 @@ export default function Home() {
       </section>
 
       <section className="section container">
+        <div className="badge" style={{ marginBottom: 12 }}>Trusted by teams like</div>
+        <TrustBar />
+      </section>
+
+      <section className="section container">
         <div className="card" style={{ padding: 24 }}>
           <div className="badge" style={{ marginBottom: 8 }}>Interactive Animation</div>
           <h2 className="display" style={{ fontSize: 'clamp(28px,4vw,42px)' }}>Tilted Cubes Grid</h2>
           <p className="subtitle" style={{ marginBottom: 16 }}>Move your mouse to tilt the cubes. Click to ripple colors.</p>
-          <Cubes gridSize={10} cellGap={{ row: 8, col: 8 }} faceColor="rgba(26,21,52,.7)" borderStyle="1px solid rgba(255,255,255,.12)" rippleColor="#B18CFF" />
+          <Suspense fallback={<div style={{ height: 200 }} />}> 
+            <Cubes gridSize={10} cellGap={{ row: 8, col: 8 }} faceColor="rgba(26,21,52,.7)" borderStyle="1px solid rgba(255,255,255,.12)" rippleColor="#B18CFF" />
+          </Suspense>
         </div>
       </section>
 
@@ -55,6 +69,27 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,.8)' }}>{f.text}</p>
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      <section className="section container">
+        <div className="badge" style={{ marginBottom: 12 }}>Our process</div>
+        <Process />
+      </section>
+
+      <section className="section container">
+        <div className="badge" style={{ marginBottom: 12 }}>What clients say</div>
+        <Testimonials />
+      </section>
+
+      <section className="section container">
+        <div className="cta">
+          <h2 className="display" style={{ fontSize: 'clamp(28px,4vw,46px)' }}>Ready to launch?</h2>
+          <p className="subtitle">We’ll scope your project and propose the clearest path to impact.</p>
+          <div className="hero-cta">
+            <Link className="btn primary" to="/contact">Schedule a discovery</Link>
+            <a className="btn" href="mailto:hello@nebula.agency">Email us</a>
+          </div>
         </div>
       </section>
     </div>

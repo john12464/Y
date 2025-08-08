@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { loadFull } from 'tsparticles'
-import { useCallback } from 'react'
 import Particles from 'react-tsparticles'
+import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion.js'
 
-export default function ParticlesBackground() {
+export default function ParticlesBackground({ disabled = false }) {
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const isOff = disabled || prefersReducedMotion
   const options = useMemo(() => ({
     fullScreen: { enable: true, zIndex: 0 },
     background: { color: { value: 'transparent' } },
@@ -25,7 +27,6 @@ export default function ParticlesBackground() {
     await loadFull(engine)
   }, [])
 
-  return (
-    <Particles id="tsparticles" init={init} options={options} />
-  )
+  if (isOff) return null
+  return <Particles id="tsparticles" init={init} options={options} />
 }

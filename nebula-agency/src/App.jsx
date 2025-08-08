@@ -12,6 +12,7 @@ import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import WhyChooseUs from './pages/WhyChooseUs.jsx'
 import Contact from './pages/Contact.jsx'
+import NotFound from './pages/NotFound.jsx'
 
 function Layout() {
   const location = useLocation()
@@ -62,7 +63,7 @@ export default function App() {
           <Route path="about" element={<About />} />
           <Route path="why-choose-us" element={<WhyChooseUs />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="*" element={<Home />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
