@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula - Web Development Agency</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="cubes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Nebula</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link active">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a href="why-choose-us.html" class="nav-link">Why Choose Us</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content animate-fade-up">
+                    <h1 class="hero-title">
+                        <span class="hero-title-main">The New Era Of Innovation</span>
+                    </h1>
+                    <p class="hero-description">
+                        Nebula is a cutting-edge web development agency that transforms your vision into stunning digital realities. We craft websites that not only look amazing but perform exceptionally.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="contact.html" class="btn btn-primary">Get Started</a>
+                        <a href="about.html" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-visual animate-float">
+                    <div id="galaxy-container" class="galaxy-background"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title animate-on-scroll">What We Do Best</h2>
+                    <p class="section-description animate-on-scroll">We specialize in creating exceptional web experiences that drive results</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <div class="icon-circle">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L2 7V10C2 16 6 20.5 12 22C18 20.5 22 16 22 10V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3>Modern Development</h3>
+                        <p>We use the latest technologies and frameworks to build fast, secure, and scalable websites that stand the test of time.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <div class="icon-circle">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 12L10.5 14.5L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3>Quality Assurance</h3>
+                        <p>Every project goes through rigorous testing to ensure flawless performance across all devices and browsers.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <div class="icon-circle">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Our optimized code and efficient architecture ensure your website loads quickly and performs smoothly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animation Section -->
+        <section class="animation-section">
+            <div class="animation-container">
+                <div class="animation-content">
+                    <h2 class="animate-on-scroll">Interactive Innovation</h2>
+                    <p class="animate-on-scroll">
+                        Experience the future of web development with our cutting-edge interactive animations. 
+                        Move your mouse over the cubes to see them respond with fluid 3D transformations, 
+                        or click anywhere to trigger a mesmerizing ripple effect that showcases the power 
+                        of modern web technologies.
+                    </p>
+                    <p class="animate-on-scroll">
+                        This is just a glimpse of what we can create for your brand - immersive, 
+                        engaging experiences that captivate your audience and set you apart from the competition.
+                    </p>
+                </div>
+                <div class="animation-visual">
+                    <div id="cubes-container" class="animate-on-scroll"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content animate-on-scroll">
+                    <h2>Ready to Transform Your Digital Presence?</h2>
+                    <p>Let's work together to create something extraordinary that will set you apart from the competition.</p>
+                    <a href="contact.html" class="btn btn-primary">Start Your Project</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Nebula</h3>
+                    <p>Crafting digital experiences that matter.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="why-choose-us.html">Why Choose Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nebula. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="galaxy.js"></script>
+    <script src="cubes.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

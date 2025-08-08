@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Nebula</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Nebula</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a href="why-choose-us.html" class="nav-link">Why Choose Us</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link active">Contact</a>
+                </li>
+            </ul>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1 class="page-title animate-fade-up">Get In Touch</h1>
+                <p class="page-description animate-fade-up">
+                    Ready to transform your digital presence? Let's discuss your project and create something extraordinary together.
+                </p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="content-section">
+            <div class="container">
+                <div class="contact-container">
+                    <!-- Contact Form -->
+                    <div class="contact-form-section">
+                        <div class="section-header">
+                            <h2 class="section-title animate-on-scroll">Start Your Project</h2>
+                            <p class="section-description animate-on-scroll">Fill out the form below and we'll get back to you within 24 hours</p>
+                        </div>
+                        <form class="contact-form animate-on-scroll">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="company">Company Name</label>
+                                <input type="text" id="company" name="company">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="projectType">Project Type</label>
+                                <select id="projectType" name="projectType" required>
+                                    <option value="">Select Project Type</option>
+                                    <option value="new-website">New Website</option>
+                                    <option value="redesign">Website Redesign</option>
+                                    <option value="ecommerce">E-commerce</option>
+                                    <option value="web-app">Web Application</option>
+                                    <option value="maintenance">Website Maintenance</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budget">Project Budget</label>
+                                <select id="budget" name="budget">
+                                    <option value="">Select Budget Range</option>
+                                    <option value="5k-10k">$5,000 - $10,000</option>
+                                    <option value="10k-25k">$10,000 - $25,000</option>
+                                    <option value="25k-50k">$25,000 - $50,000</option>
+                                    <option value="50k+">$50,000+</option>
+                                    <option value="discuss">Let's Discuss</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Project Details</label>
+                                <textarea id="message" name="message" placeholder="Tell us about your project, goals, and any specific requirements..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info-section">
+                        <div class="contact-info animate-on-scroll">
+                            <h3>Let's Talk</h3>
+                            <p>We're here to help bring your vision to life. Reach out through any of these channels:</p>
+                            
+                            <div class="contact-methods">
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h4>Email Us</h4>
+                                        <p>hello@nebula-agency.com</p>
+                                        <span>We'll respond within 24 hours</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7293C21.7209 20.9845 21.5573 21.2136 21.3521 21.4019C21.1468 21.5901 20.9046 21.7335 20.6407 21.8227C20.3769 21.9119 20.0974 21.9451 19.82 21.92C16.7428 21.5856 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.18999 12.85C3.49997 10.2412 2.44824 7.271 2.11999 4.18C2.095 3.90347 2.12787 3.62476 2.21649 3.36162C2.30512 3.09849 2.44756 2.85669 2.63476 2.65162C2.82196 2.44655 3.0498 2.28271 3.30379 2.17052C3.55777 2.05833 3.83233 2.00026 4.10999 2H7.10999C7.59344 1.99522 8.06456 2.16708 8.43727 2.48353C8.80998 2.79999 9.06063 3.23945 9.14999 3.72C9.31945 4.68007 9.62359 5.61273 10.05 6.49C10.2072 6.82715 10.2573 7.20464 10.1939 7.57215C10.1305 7.93966 9.95617 8.28051 9.68999 8.55L8.38999 9.85C9.80076 12.3801 11.8199 14.3992 14.35 15.81L15.65 14.51C15.9195 14.2438 16.2603 14.0695 16.6278 14.0061C16.9953 13.9427 17.3729 13.9928 17.71 14.15C18.5873 14.5764 19.5199 14.8805 20.48 15.05C20.9662 15.1406 21.4106 15.3969 21.7295 15.7775C22.0484 16.1581 22.2204 16.6353 22.22 17.12L22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h4>Call Us</h4>
+                                        <p>+1 (555) 123-4567</p>
+                                        <span>Mon-Fri, 9AM-6PM EST</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h4>Visit Us</h4>
+                                        <p>123 Innovation Drive<br>Tech District, CA 94105</p>
+                                        <span>By appointment only</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="response-time animate-on-scroll">
+                            <h4>Quick Response Guaranteed</h4>
+                            <div class="response-stats">
+                                <div class="response-stat">
+                                    <span class="response-number">24hrs</span>
+                                    <span class="response-label">Average Response Time</span>
+                                </div>
+                                <div class="response-stat">
+                                    <span class="response-number">98%</span>
+                                    <span class="response-label">Client Satisfaction</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Nebula</h3>
+                    <p>Crafting digital experiences that matter.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="why-choose-us.html">Why Choose Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nebula. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="galaxy.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
