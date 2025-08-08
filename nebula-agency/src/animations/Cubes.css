@@ -1,0 +1,39 @@
+.default-animation {
+  --cube-size: min(5vw, 48px);
+  margin: 0 auto;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.default-animation--scene {
+  display: grid;
+  user-select: none;
+  perspective: 800px;
+}
+.cube {
+  width: var(--cube-size);
+  height: var(--cube-size);
+  transform-style: preserve-3d;
+  transform: rotateX(0deg) rotateY(0deg);
+  transition: transform 0.3s ease;
+}
+.cube-face {
+  position: absolute;
+  inset: 0;
+  background: var(--cube-face-bg);
+  border: var(--cube-face-border);
+  box-shadow: var(--cube-face-shadow);
+}
+/* Just to give them some distinct faces if needed */
+.cube-face--top { transform: translateZ(2px); }
+.cube-face--bottom { transform: translateZ(-2px); }
+.cube-face--left { transform: rotateY(-90deg) translateZ(2px); }
+.cube-face--right { transform: rotateY(90deg) translateZ(2px); }
+.cube-face--front { transform: rotateX(90deg) translateZ(2px); }
+.cube-face--back { transform: rotateX(-90deg) translateZ(2px); }
+
+/* Hide on very small screens to keep layout clean */
+@media (max-width: 640px) {
+  .desktop-only { display: none; }
+}

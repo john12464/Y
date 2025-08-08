@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { FiZap, FiLayers, FiTrendingUp } from 'react-icons/fi'
 import Galaxy from '../effects/Galaxy.jsx'
+import Cubes from '../animations/Cubes.jsx'
 
 const features = [
   { icon: <FiZap />, title: 'Motion-first Design', text: 'Micro-interactions and cinematic transitions that feel alive.' },
@@ -24,6 +25,15 @@ export default function Home() {
               <Link className="btn" to="/why-choose-us">Why choose us</Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="section container">
+        <div className="card" style={{ padding: 24 }}>
+          <div className="badge" style={{ marginBottom: 8 }}>Interactive Animation</div>
+          <h2 className="display" style={{ fontSize: 'clamp(28px,4vw,42px)' }}>Tilted Cubes Grid</h2>
+          <p className="subtitle" style={{ marginBottom: 16 }}>Move your mouse to tilt the cubes. Click to ripple colors.</p>
+          <Cubes gridSize={10} cellGap={{ row: 8, col: 8 }} faceColor="rgba(26,21,52,.7)" borderStyle="1px solid rgba(255,255,255,.12)" rippleColor="#B18CFF" />
         </div>
       </section>
 
