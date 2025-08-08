@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { FiZap, FiLayers, FiTrendingUp } from 'react-icons/fi'
+import Galaxy from '../effects/Galaxy.jsx'
 
 const features = [
   { icon: <FiZap />, title: 'Motion-first Design', text: 'Micro-interactions and cinematic transitions that feel alive.' },
@@ -11,13 +12,18 @@ const features = [
 export default function Home() {
   return (
     <div>
-      <section className="section hero container">
-        <div className="badge">Futuristic Digital Agency</div>
-        <h1 className="display">Build experiences that feel out of this world</h1>
-        <p className="subtitle">Nebula Agency crafts immersive brands and websites with motion, precision, and a touch of stardust.</p>
-        <div className="hero-cta">
-          <Link className="btn primary" to="/contact">Start a Project</Link>
-          <Link className="btn" to="/why-choose-us">Why choose us</Link>
+      <section className="section container">
+        <div className="hero-stack card" style={{ position: 'relative', minHeight: '56vh', display: 'grid', placeItems: 'center', padding: '48px', overflow: 'hidden' }}>
+          <Galaxy hueShift={220} density={1.2} twinkleIntensity={0.35} glowIntensity={0.35} rotationSpeed={0.05} style={{ borderRadius: 'var(--radius-lg)' }} />
+          <div className="hero" style={{ position: 'relative', zIndex: 2 }}>
+            <div className="badge">Futuristic Digital Agency</div>
+            <h1 className="display">Build experiences that feel out of this world</h1>
+            <p className="subtitle">Nebula Agency crafts immersive brands and websites with motion, precision, and a touch of stardust.</p>
+            <div className="hero-cta">
+              <Link className="btn primary" to="/contact">Start a Project</Link>
+              <Link className="btn" to="/why-choose-us">Why choose us</Link>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -164,6 +164,7 @@ h1, h2, h3 {
 /* Hero */
 .hero { text-align: center; }
 .hero-cta { display: flex; gap: 14px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+.hero-stack { position: relative; border-radius: var(--radius-lg); }
 
 /* Simple keyframes */
 @keyframes floaty { from { transform: translateY(0); } 50% { transform: translateY(-8px); } to { transform: translateY(0); } }
