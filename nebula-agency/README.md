@@ -1,12 +1,53 @@
-# React + Vite
+# Nebula Agency — React (Vite + JSX)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Professional, animated digital agency site with particles, galaxy hero, GSAP cubes, pages, and contact form.
 
-Currently, two official plugins are available:
+## Develop
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm run build
+npm run preview
+```
+
+## Deploy
+
+- Vercel: import this repo. The included `vercel.json` auto-builds and serves `dist/`.
+- Netlify: drag-and-drop `dist/` or connect repo. Configured via `netlify.toml`.
+- Docker: `docker build -t nebula-agency . && docker run -p 8080:80 nebula-agency`
+
+## Structure
+
+- `src/pages` — Home, About, Why Choose Us, Contact
+- `src/components` — Navbar, Footer, Particles, Splash, TrustBar, Process, Testimonials
+- `src/effects` — Galaxy shader (OGL)
+- `src/animations` — Cubes (GSAP)
+
+## Environment notes
+
+- Animations are lazy-loaded and respect `prefers-reduced-motion`.
+- Replace `public/logo.svg` with your brand asset.
+
+---
+
+# Nebula Agency — Static HTML/CSS/JS
+
+Hand-authored, no-build static version in `../nebula-agency-static`.
+
+## Preview locally
+
+```bash
+python3 -m http.server 8080 --directory ../nebula-agency-static
+# open http://localhost:8080/nebula-agency-static/index.html
+```
+
+## Deploy
+
+- Upload the `nebula-agency-static` folder to any static host (S3 + CloudFront, Netlify Drop, GitHub Pages).
+- All animations via CDN (OGL, GSAP). No server required.
