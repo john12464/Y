@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — Nebula Agency</title>
+  <link rel="icon" type="image/svg+xml" href="/nebula-agency-static/assets/logo.svg" />
+  <link rel="stylesheet" href="/nebula-agency-static/css/styles.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="/nebula-agency-static/index.html"><img src="/nebula-agency-static/assets/logo.svg" alt="Nebula Agency" /><span class="title">Nebula Agency</span></a>
+      <nav class="nav-links"><a href="/nebula-agency-static/about.html">About</a><a href="/nebula-agency-static/why-choose-us.html">Why Choose Us</a><a href="/nebula-agency-static/contact.html">Contact</a></nav>
+    </div>
+  </header>
+  <main class="main-content">
+    <section id="contact-form" class="section container">
+      <div class="badge">Contact</div>
+      <h1 class="display">Let’s launch something stellar</h1>
+      <p class="subtitle">Share your goals and we’ll come back with a roadmap.</p>
+
+      <form id="form" class="form" style="display:grid;gap:14px;max-width:720px">
+        <div class="grid2">
+          <input class="input" placeholder="Your name" name="name" required />
+          <input class="input" placeholder="Email" name="email" type="email" required />
+        </div>
+        <input class="input" placeholder="Company (optional)" name="company" />
+        <input class="input" placeholder="Website (optional)" name="website" />
+        <textarea class="input" name="message" rows="6" placeholder="Tell us about your project" required></textarea>
+        <div style="display:flex;gap:12px">
+          <button class="btn primary" type="submit">Send message</button>
+          <button class="btn" type="reset">Reset</button>
+        </div>
+        <p id="form-status" class="subtitle" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><small>© <span id="year"></span> Nebula Agency</small></div></footer>
+  <script src="/nebula-agency-static/js/main.js"></script>
+  <script>
+    const form = document.getElementById('form')
+    const statusEl = document.getElementById('form-status')
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const data = new FormData(form)
+      if (!data.get('name') || !data.get('email') || !data.get('message')) {
+        statusEl.textContent = 'Please fill out all required fields.'
+        return
+      }
+      statusEl.textContent = 'Thanks! We\'ll be in touch within 1–2 business days.'
+      form.reset()
+    })
+  </script>
+</body>
+</html>
