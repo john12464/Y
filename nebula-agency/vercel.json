@@ -1,6 +1,7 @@
 {
   "builds": [{ "src": "package.json", "use": "@vercel/static-build" }],
   "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "buildCommand": "npm ci || npm install && npm run build",
+  "outputDirectory": "dist",
+  "env": { "NODE_VERSION": "20" }
 }
