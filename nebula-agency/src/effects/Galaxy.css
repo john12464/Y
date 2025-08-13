@@ -3,13 +3,3 @@
   inset: 0;
   z-index: 0;
 }
-
-/* Optional vignette overlay when used inside hero */
-.hero-stack::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: radial-gradient(120% 80% at 50% 20%, rgba(13,12,29,0) 40%, rgba(13,12,29,0.25) 60%, rgba(13,12,29,0.55) 100%);
-  pointer-events: none;
-}
