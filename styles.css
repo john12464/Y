@@ -211,7 +211,7 @@ body {
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--color-background), var(--color-support));
+  background: black;
 }
 
 /* Sections */
@@ -1007,6 +1007,54 @@ body {
   line-height: 1.6;
 }
 
+/* Animation Section */
+.animation-section {
+  padding: 120px 0;
+  background: linear-gradient(180deg, var(--color-support) 0%, var(--color-background) 100%);
+}
+
+.animation-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.animation-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--color-main), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animation-content p {
+  color: rgba(240, 241, 245, 0.8);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.animation-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+#cubes-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav-menu {
@@ -1087,6 +1135,16 @@ body {
 
   .faq-grid {
     grid-template-columns: 1fr;
+  }
+
+  .animation-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .animation-visual {
+    height: 300px;
   }
 }
 
