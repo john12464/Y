@@ -6,7 +6,6 @@ const stats = [
   { label: 'Projects launched', value: 120 },
   { label: 'Avg. ROI increase', value: 214, suffix: '%' },
   { label: 'Client NPS', value: 72 },
-  { label: 'Team members', value: 15 },
 ]
 
 const values = [
