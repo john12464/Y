@@ -4,7 +4,6 @@ import { FiZap, FiLayers, FiTrendingUp } from 'react-icons/fi'
 import { lazy, Suspense } from 'react'
 import TrustBar from '../components/TrustBar.jsx'
 import Process from '../components/Process.jsx'
-import Testimonials from '../components/Testimonials.jsx'
 
 const Galaxy = lazy(() => import('../effects/Galaxy.jsx'))
 const Cubes = lazy(() => import('../animations/Cubes.jsx'))
@@ -21,7 +20,7 @@ export default function Home() {
       <section className="section container">
         <div className="hero-stack card" style={{ position: 'relative', minHeight: '56vh', display: 'grid', placeItems: 'center', padding: '48px', overflow: 'hidden' }}>
           <Suspense fallback={null}>
-            <Galaxy hueShift={220} density={1.2} twinkleIntensity={0.35} glowIntensity={0.35} rotationSpeed={0.05} style={{ borderRadius: 'var(--radius-lg)' }} />
+            <Galaxy hueShift={220} density={1.2} twinkleIntensity={0.35} glowIntensity={0.35} rotationSpeed={0.05} transparent={false} style={{ borderRadius: 'var(--radius-lg)' }} />
           </Suspense>
           <div className="hero" style={{ position: 'relative', zIndex: 2 }}>
             <div className="badge">Futuristic Digital Agency</div>
@@ -77,10 +76,7 @@ export default function Home() {
         <Process />
       </section>
 
-      <section className="section container">
-        <div className="badge" style={{ marginBottom: 12 }}>What clients say</div>
-        <Testimonials />
-      </section>
+
 
       <section className="section container">
         <div className="cta">

@@ -17,10 +17,11 @@ export default function Navbar() {
         ☰
       </button>
       <nav className={`nav-links ${open ? 'open' : ''}`} onClick={() => setOpen(false)}>
+        <NavLink to="/" style={activeStyle}>Home</NavLink>
         <NavLink to="/about" style={activeStyle}>About</NavLink>
         <NavLink to="/why-choose-us" style={activeStyle}>Why Choose Us</NavLink>
         <NavLink to="/contact" style={activeStyle}>Contact</NavLink>
-        <a className="btn primary" href="#contact">Start a Project</a>
+        <Link className="btn primary" to="/contact">Start a Project</Link>
       </nav>
     </div>
   )
