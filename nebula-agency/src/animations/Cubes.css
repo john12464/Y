@@ -11,6 +11,10 @@
   width: 50%;
   aspect-ratio: 1 / 1;
   height: auto;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .default-animation--scene {
@@ -76,5 +80,6 @@
 @media (max-width: 768px) {
   .default-animation {
     width: 90%;
+    margin: 0 auto;
   }
 }
