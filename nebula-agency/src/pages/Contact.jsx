@@ -30,36 +30,85 @@ export default function Contact() {
       <p className="subtitle">Share your goals and we'll come back with a roadmap.</p>
 
       {submitted && (
-        <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-          <strong>Thanks!</strong> We'll be in touch within 1–2 business days.
+        <div className="card success-message" style={{ padding: 24, marginBottom: 24, textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
+          <strong style={{ fontSize: '20px', color: '#fff' }}>Message sent successfully!</strong>
+          <p style={{ marginTop: '8px', color: 'rgba(255,255,255,0.8)' }}>We'll be in touch within 1–2 business days.</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'grid', gap: 14, marginTop: 22, maxWidth: 720 }}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'grid', gap: 20, marginTop: 32, maxWidth: 720 }}>
         <input type="text" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" {...register('hp_field')} />
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-          <div>
-            <input className={`input ${errors.name ? 'error' : ''}`} placeholder="Your name" {...register('name')} />
+        
+        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+          <div className="input-group">
+            <div className="input-icon">👤</div>
+            <input 
+              className={`input ${errors.name ? 'error' : ''}`} 
+              placeholder="Your name" 
+              {...register('name')} 
+            />
             {errors.name && <div className="error-text">{errors.name.message}</div>}
           </div>
-          <div>
-            <input className={`input ${errors.email ? 'error' : ''}`} placeholder="Email" {...register('email')} />
+          <div className="input-group">
+            <div className="input-icon">📧</div>
+            <input 
+              className={`input ${errors.email ? 'error' : ''}`} 
+              placeholder="Email" 
+              {...register('email')} 
+            />
             {errors.email && <div className="error-text">{errors.email.message}</div>}
           </div>
         </div>
-        <div>
-          <input className="input" placeholder="Company (optional)" {...register('company')} />
+        
+        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+          <div className="input-group">
+            <div className="input-icon">🏢</div>
+            <input className="input" placeholder="Company (optional)" {...register('company')} />
+          </div>
+          <div className="input-group">
+            <div className="input-icon">🌐</div>
+            <input className="input" placeholder="Website (optional)" {...register('website')} />
+          </div>
         </div>
-        <div>
-          <input className="input" placeholder="Website (optional)" {...register('website')} />
-        </div>
-        <div>
-          <textarea rows={6} className={`input ${errors.message ? 'error' : ''}`} placeholder="Tell us about your project" {...register('message')} />
+        
+        <div className="input-group">
+          <div className="input-icon">💬</div>
+          <textarea 
+            rows={6} 
+            className={`input ${errors.message ? 'error' : ''}`} 
+            placeholder="Tell us about your project, goals, timeline, and any specific requirements..." 
+            {...register('message')} 
+          />
           {errors.message && <div className="error-text">{errors.message.message}</div>}
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending…' : 'Send message'}</button>
-          <button className="btn" type="reset" onClick={() => reset()}>Reset</button>
+        
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
+          <button 
+            className="btn primary" 
+            type="submit" 
+            disabled={isSubmitting}
+            style={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          >
+            {isSubmitting ? (
+              <>
+                <div className="spinner"></div>
+                Sending...
+              </>
+            ) : (
+              <>
+                📤 Send message
+              </>
+            )}
+          </button>
+          <button 
+            className="btn" 
+            type="reset" 
+            onClick={() => reset()}
+            style={{ minWidth: '120px' }}
+          >
+            Reset
+          </button>
         </div>
       </form>
     </section>
