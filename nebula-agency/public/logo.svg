@@ -11,9 +11,13 @@
     </linearGradient>
   </defs>
   
-  <!-- Crescent Moon -->
-  <path d="M80 128c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48-48-21.5-48-48z" fill="url(#moonGradient)"/>
-  <path d="M128 80c-26.5 0-48 21.5-48 48s21.5 48 48 48c26.5 0 48-21.5 48-48s-21.5-48-48-48z" fill="#000000"/>
+  <!-- Crescent Moon - Fixed positioning -->
+  <g transform="translate(60, 80)">
+    <!-- Full moon circle -->
+    <circle cx="64" cy="64" r="48" fill="url(#moonGradient)"/>
+    <!-- Black circle to create crescent shape -->
+    <circle cx="80" cy="64" r="48" fill="#000000"/>
+  </g>
   
   <!-- Four Stars -->
   <g fill="#FFFFFF">
