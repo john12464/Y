@@ -20,7 +20,7 @@ function Layout() {
     <div className="app-wrapper">
       <ParticlesBackground />
       <header className="navbar">
-        <div className="container nav-inner">
+        <div className="container">
           <Navbar />
         </div>
       </header>
