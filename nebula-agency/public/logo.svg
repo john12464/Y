@@ -1,33 +1,15 @@
 <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Black background -->
-  <rect width="256" height="256" rx="56" fill="#000000"/>
-  
-  <!-- Crescent Moon with gradient -->
+  <rect width="256" height="256" rx="56" fill="#0d0c1d"/>
   <defs>
-    <linearGradient id="moonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#8B5CF6"/>
-      <stop offset="50%" stop-color="#EC4899"/>
-      <stop offset="100%" stop-color="#F472B6"/>
+    <linearGradient id="g" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c6cf2"/>
+      <stop offset="1" stop-color="#ff7bbd"/>
     </linearGradient>
   </defs>
-  
-  <!-- Crescent Moon - Fixed positioning -->
-  <g transform="translate(60, 80)">
-    <!-- Full moon circle -->
-    <circle cx="64" cy="64" r="48" fill="url(#moonGradient)"/>
-    <!-- Black circle to create crescent shape -->
-    <circle cx="80" cy="64" r="48" fill="#000000"/>
-  </g>
-  
-  <!-- Four Stars -->
-  <g fill="#FFFFFF">
-    <!-- Largest star (top right) -->
-    <path d="M200 60l3 9 9 3-9 3-3 9-3-9-9-3 9-3 3-9z"/>
-    <!-- Medium star (below largest) -->
-    <path d="M180 100l2.5 7.5 7.5 2.5-7.5 2.5-2.5 7.5-2.5-7.5-7.5-2.5 7.5-2.5 2.5-7.5z"/>
-    <!-- Small star (near moon curve) -->
-    <path d="M160 140l2 6 6 2-6 2-2 6-2-6-6-2 6-2 2-6z"/>
-    <!-- Smallest star (bottom right) -->
-    <path d="M190 170l1.5 4.5 4.5 1.5-4.5 1.5-1.5 4.5-1.5-4.5-4.5-1.5 4.5-1.5 1.5-4.5z"/>
+  <path d="M184 196c-49 0-88.7-39.7-88.7-88.7 0-19.6 6.2-37.7 16.7-52.5C82 61.3 56 92.3 56 129.1 56 170.6 89.4 204 130.9 204c20.1 0 38.6-6.7 53.4-18z" fill="url(#g)"/>
+  <g fill="#fff">
+    <path d="M176 68l5 15 15 5-15 5-5 15-5-15-15-5 15-5 5-15z"/>
+    <path d="M152 116l3 9 9 3-9 3-3 9-3-9-9-3 9-3 3-9z"/>
+    <path d="M204 120l2 7 7 2-7 2-2 7-2-7-7-2 7-2 2-7z"/>
   </g>
 </svg>

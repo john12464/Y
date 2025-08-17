@@ -84,7 +84,6 @@ export default function Home() {
           <p className="subtitle">We’ll scope your project and propose the clearest path to impact.</p>
           <div className="hero-cta">
             <Link className="btn primary" to="/contact">Schedule a discovery</Link>
-            <a className="btn" href="mailto:hello@nebula.agency">Email us</a>
           </div>
         </div>
       </section>
