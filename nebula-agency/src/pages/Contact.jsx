@@ -9,12 +9,17 @@ const schema = z.object({
   message: z.string().min(10, 'Tell us a bit more about your project'),
   company: z.string().optional(),
   website: z.string().optional(),
+  budget: z.number().min(1000, 'Please select your budget'),
   hp_field: z.string().max(0).optional(),
 })
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({ resolver: zodResolver(schema) })
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: { budget: 10000 }
+  })
+  const budgetValue = watch('budget', 10000)
 
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
@@ -42,20 +47,20 @@ export default function Contact() {
         
         <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
           <div className="input-group">
-            <div className="input-icon">👤</div>
             <input 
               className={`input ${errors.name ? 'error' : ''}`} 
               placeholder="Your name" 
               {...register('name')} 
+              style={{ paddingLeft: 16 }}
             />
             {errors.name && <div className="error-text">{errors.name.message}</div>}
           </div>
           <div className="input-group">
-            <div className="input-icon">📧</div>
             <input 
               className={`input ${errors.email ? 'error' : ''}`} 
               placeholder="Email" 
               {...register('email')} 
+              style={{ paddingLeft: 16 }}
             />
             {errors.email && <div className="error-text">{errors.email.message}</div>}
           </div>
@@ -63,22 +68,39 @@ export default function Contact() {
         
         <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
           <div className="input-group">
-            <div className="input-icon">🏢</div>
-            <input className="input" placeholder="Company (optional)" {...register('company')} />
+            <input className="input" placeholder="Company (optional)" {...register('company')} style={{ paddingLeft: 16 }} />
           </div>
           <div className="input-group">
-            <div className="input-icon">🌐</div>
-            <input className="input" placeholder="Website (optional)" {...register('website')} />
+            <input className="input" placeholder="Website (optional)" {...register('website')} style={{ paddingLeft: 16 }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gap: 8 }}>
+          <label style={{ color: 'rgba(255,255,255,0.9)' }}>
+            Budget: <strong>${new Intl.NumberFormat('en-US').format(budgetValue)}</strong>
+          </label>
+          <input
+            type="range"
+            min={1000}
+            max={100000}
+            step={1000}
+            {...register('budget', { valueAsNumber: true })}
+          />
+          {errors.budget && <div className="error-text">{errors.budget.message}</div>}
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
+            <span>$1k</span>
+            <span>$50k</span>
+            <span>$100k+</span>
           </div>
         </div>
         
         <div className="input-group">
-          <div className="input-icon">💬</div>
           <textarea 
             rows={6} 
             className={`input ${errors.message ? 'error' : ''}`} 
             placeholder="Tell us about your project, goals, timeline, and any specific requirements..." 
             {...register('message')} 
+            style={{ paddingLeft: 16 }}
           />
           {errors.message && <div className="error-text">{errors.message.message}</div>}
         </div>
