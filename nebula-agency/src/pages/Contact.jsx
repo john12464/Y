@@ -118,16 +118,14 @@ export default function Contact() {
                 Sending...
               </>
             ) : (
-              <>
-                📤 Send message
-              </>
+              'Send message'
             )}
           </button>
           <button 
             className="btn" 
             type="reset" 
             onClick={() => reset()}
-            style={{ minWidth: '120px' }}
+            style={{ minWidth: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             Reset
           </button>
