@@ -5,7 +5,7 @@ import { FiZap, FiUsers, FiGlobe, FiAward, FiTrendingUp, FiHeart } from 'react-i
 const stats = [
   { label: 'Custom build', value: 100, suffix: '%' },
   { label: 'Avg. ROI increase', value: 65, suffix: '%' },
-  { label: 'Client NPS', value: 72 },
+  { label: 'Client NPS', value: 50 },
 ]
 
 const values = [
