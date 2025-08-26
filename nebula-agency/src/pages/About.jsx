@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { FiZap, FiUsers, FiGlobe, FiAward, FiTrendingUp, FiHeart } from 'react-icons/fi'
 
 const stats = [
-  { label: 'Projects launched', value: 40 },
+  { label: 'Custom build', value: 100, suffix: '%' },
   { label: 'Avg. ROI increase', value: 65, suffix: '%' },
   { label: 'Client NPS', value: 72 },
 ]
@@ -54,10 +54,10 @@ export default function About() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginTop: 32 }}>
           <div>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              Nebula Agency was founded in 2020 with a simple belief: digital experiences should be just as beautiful as they are functional. What began as a small team of designers and developers with a shared vision has grown into a creative digital studio dedicated to building solutions that balance design, technology, and performance.
+              Nebula Agency was created from a simple belief: digital experiences should be just as beautiful as they are functional. Our focus is on building solutions that balance design, technology, and performance in ways that truly serve our clients. 
             </p>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              Since our start, we’ve had the privilege of working with a wide variety of clients—from local startups and community organizations to established companies exploring new ways to connect online. Every collaboration has shaped our journey and strengthened our commitment to delivering digital work that makes a real difference.
+              Over time, we’ve had the privilege of working with a wide variety of clients—from local startups and community organizations to established companies exploring new ways to connect online. Each collaboration has shaped our journey and strengthened our commitment to delivering digital work that makes a real difference.
             </p>
             <p className="subtitle">
               Our approach is built on blending modern tools with timeless design principles. We don’t chase trends for the sake of novelty; instead, we focus on creating solutions that feel innovative today while remaining effective and adaptable tomorrow.
@@ -65,7 +65,7 @@ export default function About() {
           </div>
           <div>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              The Nebula team brings together expertise in user experience design, front-end development, back-end architecture, and digital strategy. This allows us to approach projects from multiple perspectives and ensure that the final result is not only visually engaging but also reliable and scalable.
+              We specialize in user experience design, front-end development, back-end architecture, and digital strategy. This combination allows us to approach projects from multiple perspectives and ensure that the final result is not only visually engaging but also reliable and scalable.
             </p>
             <p className="subtitle" style={{ marginBottom: 16 }}>
               Whether you’re looking for a refreshed brand identity, a custom website, or improvements to your existing digital platforms, we provide thoughtful, tailored solutions designed to meet your specific needs.
