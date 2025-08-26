@@ -15,7 +15,7 @@ const advantages = [
   { icon: <FiZap />, title: 'Lightning Fast Delivery', description: 'Our streamlined processes and experienced team ensure your project is delivered on time, every time.' },
   { icon: <FiUsers />, title: 'Expert Team', description: 'Work with seasoned professionals who bring years of experience in design, development, and digital strategy.' },
   { icon: <FiGlobe />, title: 'Global Reach', description: 'We serve clients worldwide, bringing international perspectives and best practices to every project.' },
-  { icon: <FiAward />, title: 'Proven Results', description: 'Our track record speaks for itself - 214% average ROI increase and 72 NPS score from satisfied clients.' },
+  { icon: <FiAward />, title: 'Proven Results', description: 'Our track record speaks for itself - 65% average ROI increase and 50 NPS score from satisfied clients.' },
   { icon: <FiTrendingUp />, title: 'Growth Focused', description: 'We don\'t just build websites; we create digital experiences that drive measurable business growth.' },
   { icon: <FiClock />, title: 'Ongoing Support', description: 'Our relationship doesn\'t end at launch. We provide ongoing support and maintenance to keep your site performing optimally.' },
 ]
