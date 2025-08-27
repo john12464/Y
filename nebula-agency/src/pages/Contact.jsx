@@ -23,9 +23,18 @@ export default function Contact() {
 
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
-    await new Promise(r => setTimeout(r, 800))
-    setSubmitted(true)
-    reset()
+    try {
+      const resp = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!resp.ok) throw new Error('Failed to send')
+      setSubmitted(true)
+      reset({ budget: 10000 })
+    } catch (e) {
+      alert('There was a problem sending your message. Please try again.')
+    }
   }
 
   return (
@@ -48,8 +57,11 @@ export default function Contact() {
         <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
           <div className="input-group">
             <input 
+              type="text"
+              autoComplete="name"
               className={`input ${errors.name ? 'error' : ''}`} 
               placeholder="Your name" 
+              aria-invalid={errors.name ? 'true' : 'false'}
               {...register('name')} 
               style={{ paddingLeft: 16 }}
             />
@@ -57,8 +69,11 @@ export default function Contact() {
           </div>
           <div className="input-group">
             <input 
+              type="email"
+              autoComplete="email"
               className={`input ${errors.email ? 'error' : ''}`} 
               placeholder="Email" 
+              aria-invalid={errors.email ? 'true' : 'false'}
               {...register('email')} 
               style={{ paddingLeft: 16 }}
             />
