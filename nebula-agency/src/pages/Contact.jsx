@@ -18,9 +18,26 @@ export default function Contact() {
 
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
-    await new Promise(r => setTimeout(r, 800))
-    setSubmitted(true)
-    reset()
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          message: data.message,
+          company: data.company,
+          website: data.website,
+        }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to send')
+      }
+      setSubmitted(true)
+      reset()
+    } catch (err) {
+      alert('There was an issue sending your message. Please try again later.')
+    }
   }
 
   return (
