@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { FiZap, FiUsers, FiGlobe, FiAward, FiTrendingUp, FiHeart } from 'react-icons/fi'
 
 const stats = [
-  { label: 'Projects launched', value: 120 },
-  { label: 'Avg. ROI increase', value: 214, suffix: '%' },
-  { label: 'Client NPS', value: 72 },
+  { label: 'Custom build', value: 100, suffix: '%' },
+  { label: 'Avg. ROI increase', value: 65, suffix: '%' },
+  { label: 'Client NPS', value: 50 },
 ]
 
 const values = [
@@ -54,24 +54,24 @@ export default function About() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginTop: 32 }}>
           <div>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              Founded in 2020, Nebula Agency emerged from a simple belief: that digital experiences should be as beautiful as they are functional. Our journey began with a small team of passionate designers and developers who shared a vision of creating websites that not only look stunning but also perform exceptionally.
+              Nebula Agency was created from a simple belief: digital experiences should be just as beautiful as they are functional. Our focus is on building solutions that balance design, technology, and performance in ways that truly serve our clients. 
             </p>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              Today, we've grown into a full-service digital agency serving clients across the globe. From startups to Fortune 500 companies, we've helped businesses of all sizes establish powerful digital presences that drive real results.
+              Over time, we’ve had the privilege of working with a wide variety of clients—from local startups and community organizations to established companies exploring new ways to connect online. Each collaboration has shaped our journey and strengthened our commitment to delivering digital work that makes a real difference.
             </p>
             <p className="subtitle">
-              Our approach combines cutting-edge technology with timeless design principles, ensuring that every project we deliver is both innovative and enduring.
+              Our approach is built on blending modern tools with timeless design principles. We don’t chase trends for the sake of novelty; instead, we focus on creating solutions that feel innovative today while remaining effective and adaptable tomorrow.
             </p>
           </div>
           <div>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              We specialize in creating immersive digital experiences that captivate audiences and drive conversions. Our team brings together expertise in user experience design, front-end development, back-end architecture, and digital strategy.
+              We specialize in user experience design, front-end development, back-end architecture, and digital strategy. This combination allows us to approach projects from multiple perspectives and ensure that the final result is not only visually engaging but also reliable and scalable.
             </p>
             <p className="subtitle" style={{ marginBottom: 16 }}>
-              Whether you need a complete brand overhaul, a custom web application, or a performance optimization strategy, we have the skills and experience to bring your vision to life.
+              Whether you’re looking for a refreshed brand identity, a custom website, or improvements to your existing digital platforms, we provide thoughtful, tailored solutions designed to meet your specific needs.
             </p>
             <p className="subtitle">
-              We believe in the power of collaboration and transparency. Every project is a partnership, and we work closely with our clients to ensure their vision is realized exactly as they imagined it.
+              At Nebula, we believe the best work comes from collaboration. Every project is a partnership, and we place transparency, communication, and shared vision at the center of our process. By working closely with our clients, we ensure that the final outcome reflects both their goals and our dedication to craft.
             </p>
           </div>
         </div>
