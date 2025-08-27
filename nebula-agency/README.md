@@ -104,11 +104,17 @@ The form at `src/pages/Contact.jsx` posts to `/api/contact`. In production on Ve
 
 ### 4) Local development
 
-- Vite dev server does not run serverless functions. Use `vercel dev` for local API testing:
+- During `npm run dev`, a Vite middleware handles `POST /api/contact` and forwards to Make with the secret. Create `./.env`:
 
-```bash
-npm i -g vercel
-vercel dev
+```
+MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
+MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
 ```
 
-Then open the app at the URL shown by Vercel (the API will be available at `/api/contact`).
+Then:
+
+```
+npm run dev
+```
+
+In Make, click “Run once”, then submit the form locally.
