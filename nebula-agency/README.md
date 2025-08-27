@@ -63,6 +63,9 @@ Create a `.env` (or configure variables in your hosting provider) with:
 ```
 MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
 MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
+# Cloudflare Turnstile
+TURNSTILE_SECRET_KEY=YOUR_TURNSTILE_SECRET_KEY
+VITE_TURNSTILE_SITE_KEY=YOUR_TURNSTILE_SITE_KEY
 ```
 
 On Vercel, set these in Project Settings → Environment Variables. On Netlify, use Site settings → Environment variables.
@@ -98,6 +101,7 @@ Recommended Notion property mapping:
 ### 3) Frontend behavior
 
 The form at `src/pages/Contact.jsx` posts to `/api/contact`. In production on Vercel, this resolves to the serverless function at `api/contact.js`, which:
+- Verifies Cloudflare Turnstile token using `TURNSTILE_SECRET_KEY`
 - Validates the input (name/email/message + honeypot)
 - Adds the `X-Webhook-Secret` header set to `MAKE_WEBHOOK_SECRET`
 - Forwards the JSON to `MAKE_WEBHOOK_URL`
@@ -109,6 +113,8 @@ The form at `src/pages/Contact.jsx` posts to `/api/contact`. In production on Ve
 ```
 MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
 MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
 ```
 
 Then:
@@ -118,3 +124,10 @@ npm run dev
 ```
 
 In Make, click “Run once”, then submit the form locally.
+
+### 5) Captcha notes (Cloudflare Turnstile)
+
+- The widget is loaded via `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` in `index.html` and rendered invisibly in `Contact.jsx`.
+- The response token is sent as `cf_turnstile_response` with the form payload.
+- Server-side verification runs in both `api/contact.js` and the Vite dev proxy, failing requests with invalid/missing tokens.
+- Use the test keys above locally; obtain production keys from Cloudflare Turnstile for your domain.

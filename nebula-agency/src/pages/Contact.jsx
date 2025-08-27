@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,23 +15,65 @@ const schema = z.object({
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileRef = useRef(null)
+  const tokenResolveRef = useRef(null)
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm({
     resolver: zodResolver(schema),
     defaultValues: { budget: 10000 }
   })
   const budgetValue = watch('budget', 10000)
 
+  useEffect(() => {
+    const onLoad = () => {
+      if (window.turnstile && !turnstileRef.current) {
+        const container = document.getElementById('turnstile-container')
+        if (container) {
+          turnstileRef.current = window.turnstile.render(container, {
+            sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
+            size: 'invisible',
+            callback: (token) => {
+              setCaptchaToken(token)
+              if (tokenResolveRef.current) {
+                tokenResolveRef.current(token)
+                tokenResolveRef.current = null
+              }
+            },
+            'error-callback': () => setCaptchaToken(''),
+            'expired-callback': () => setCaptchaToken(''),
+          })
+        }
+      }
+    }
+    onLoad()
+  }, [])
+
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
+    let tokenToUse = captchaToken
+    if (!tokenToUse && window.turnstile && turnstileRef.current) {
+      tokenToUse = await new Promise((resolve) => {
+        tokenResolveRef.current = resolve
+        try { window.turnstile.execute(turnstileRef.current) } catch { resolve('') }
+      })
+    }
+    if (!tokenToUse) {
+      alert('Captcha verification failed. Please try again.')
+      return
+    }
     try {
       const resp = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, cf_turnstile_response: tokenToUse }),
       })
       if (!resp.ok) throw new Error('Failed to send')
       setSubmitted(true)
       reset({ budget: 10000 })
+      setCaptchaToken('')
+      if (window.turnstile && turnstileRef.current) {
+        try { window.turnstile.reset(turnstileRef.current) } catch {}
+      }
     } catch (e) {
       alert('There was a problem sending your message. Please try again.')
     }
@@ -53,6 +95,7 @@ export default function Contact() {
 
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'grid', gap: 20, marginTop: 32, maxWidth: 720 }}>
         <input type="text" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" {...register('hp_field')} />
+        <div id="turnstile-container" />
         
         <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
           <div className="input-group">

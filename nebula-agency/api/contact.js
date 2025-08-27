@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { MAKE_WEBHOOK_URL, MAKE_WEBHOOK_SECRET } = process.env
+    const { MAKE_WEBHOOK_URL, MAKE_WEBHOOK_SECRET, TURNSTILE_SECRET_KEY } = process.env
     if (!MAKE_WEBHOOK_URL || !MAKE_WEBHOOK_SECRET) {
       res.status(500).json({ error: 'Server misconfiguration: missing webhook env' })
       return
@@ -20,6 +20,27 @@ export default async function handler(req, res) {
     // Basic honeypot check (aligns with frontend hp_field)
     if (body.hp_field) {
       res.status(204).end()
+      return
+    }
+
+    // Turnstile verification (server-side)
+    const captchaToken = typeof body.cf_turnstile_response === 'string' ? body.cf_turnstile_response : ''
+    if (!captchaToken) {
+      res.status(400).json({ error: 'Missing captcha token' })
+      return
+    }
+    if (!TURNSTILE_SECRET_KEY) {
+      res.status(500).json({ error: 'Server misconfiguration: missing TURNSTILE_SECRET_KEY' })
+      return
+    }
+    const verifyResp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret: TURNSTILE_SECRET_KEY, response: captchaToken }).toString(),
+    })
+    const verifyJson = await verifyResp.json().catch(() => ({ success: false }))
+    if (!verifyJson?.success) {
+      res.status(403).json({ error: 'Captcha verification failed' })
       return
     }
 

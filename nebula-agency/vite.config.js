@@ -44,6 +44,37 @@ export default defineConfig(({ mode }) => {
             return
           }
 
+          // Turnstile verification (server-side during dev)
+          const captchaToken = typeof body.cf_turnstile_response === 'string' ? body.cf_turnstile_response : ''
+          const secretKey = env.TURNSTILE_SECRET_KEY
+          if (!captchaToken) {
+            res.statusCode = 400
+            res.end('Missing captcha token')
+            return
+          }
+          if (!secretKey) {
+            res.statusCode = 500
+            res.end('Missing TURNSTILE_SECRET_KEY')
+            return
+          }
+          try {
+            const verifyResp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({ secret: secretKey, response: captchaToken }).toString(),
+            })
+            const verifyJson = await verifyResp.json().catch(() => ({ success: false }))
+            if (!verifyJson?.success) {
+              res.statusCode = 403
+              res.end('Captcha verification failed')
+              return
+            }
+          } catch (e) {
+            res.statusCode = 502
+            res.end('Captcha verification error')
+            return
+          }
+
           const hasName = typeof body.name === 'string' && body.name.trim().length >= 2
           const hasEmail = typeof body.email === 'string' && /.+@.+\..+/.test(body.email)
           const hasMessage = typeof body.message === 'string' && body.message.trim().length >= 10
