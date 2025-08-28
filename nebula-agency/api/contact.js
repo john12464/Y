@@ -5,9 +5,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { MAKE_WEBHOOK_URL, MAKE_WEBHOOK_SECRET } = process.env
+    const { MAKE_WEBHOOK_URL, MAKE_WEBHOOK_SECRET, FORM_SECRET } = process.env
     if (!MAKE_WEBHOOK_URL || !MAKE_WEBHOOK_SECRET) {
       res.status(500).json({ error: 'Server misconfiguration: missing webhook env' })
+      return
+    }
+    if (!FORM_SECRET) {
+      res.status(500).json({ error: 'Server misconfiguration: missing FORM_SECRET' })
       return
     }
 
@@ -20,6 +24,17 @@ export default async function handler(req, res) {
     // Basic honeypot check (aligns with frontend hp_field)
     if (body.hp_field) {
       res.status(204).end()
+      return
+    }
+
+    // Validate form token (HMAC signed)
+    if (typeof body.form_token !== 'string') {
+      res.status(400).json({ error: 'Missing form token' })
+      return
+    }
+    const isTokenValid = verifyFormToken(body.form_token, FORM_SECRET, req.headers['user-agent'] || '')
+    if (!isTokenValid) {
+      res.status(403).json({ error: 'Invalid form token' })
       return
     }
 
@@ -39,7 +54,7 @@ export default async function handler(req, res) {
       company: body.company ?? '',
       website: body.website ?? '',
       budget: typeof body.budget === 'number' ? body.budget : null,
-      cf_turnstile_response: typeof body.cf_turnstile_response === 'string' ? body.cf_turnstile_response : '',
+      form_token: body.form_token,
       // Metadata useful in Make/Notion
       submittedAt: new Date().toISOString(),
       userAgent: req.headers['user-agent'] || '',
@@ -76,5 +91,32 @@ async function readJson(req) {
     })
     req.on('error', reject)
   })
+}
+
+function verifyFormToken(token, secret, userAgent) {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 4) return false
+    const [issuedAtStr, uaHash, nonce, signature] = parts
+    const issuedAt = parseInt(issuedAtStr, 10)
+    if (!Number.isFinite(issuedAt)) return false
+    // 15 minutes expiry
+    if (Math.floor(Date.now() / 1000) - issuedAt > 15 * 60) return false
+    const expectedUaHash = (await import('crypto')).createHash('sha256').update(userAgent).digest('hex')
+    if (uaHash !== expectedUaHash) return false
+    const payload = `${issuedAt}.${uaHash}.${nonce}`
+    const actualSig = (await import('crypto')).createHmac('sha256', secret).update(payload).digest('hex')
+    return cryptoSafeEqual(signature, actualSig)
+  } catch {
+    return false
+  }
+}
+
+function cryptoSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false
+  if (a.length !== b.length) return false
+  let out = 0
+  for (let i = 0; i < a.length; i++) out |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return out === 0
 }
 

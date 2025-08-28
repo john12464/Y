@@ -63,8 +63,8 @@ Create a `.env` (or configure variables in your hosting provider) with:
 ```
 MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
 MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
-# Cloudflare Turnstile (frontend widget only; verification happens in Make)
-VITE_TURNSTILE_SITE_KEY=YOUR_TURNSTILE_SITE_KEY
+# Form token (HMAC)
+FORM_SECRET=YOUR_LONG_RANDOM_FORM_SECRET
 ```
 
 On Vercel, set these in Project Settings → Environment Variables. On Netlify, use Site settings → Environment variables.
@@ -122,9 +122,8 @@ npm run dev
 
 In Make, click “Run once”, then submit the form locally.
 
-### 5) Captcha notes (Cloudflare Turnstile)
+### 5) Invisible form token (anti-spam)
 
-- The widget is loaded via `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` in `index.html` and rendered invisibly in `Contact.jsx`.
-- The response token is sent as `cf_turnstile_response` with the form payload and forwarded to Make.
-- Verification is performed in your Make scenario: add an HTTP module to POST `secret` and `response` to `https://challenges.cloudflare.com/turnstile/v0/siteverify`, check `success === true` before continuing.
-- Use the test site key locally; keep your Turnstile secret only in Make (do not expose it to the client or this repository).
+- The frontend fetches a short-lived signed token from `/api/form-token` and includes it as `form_token` in the submission.
+- The dev proxy and the production function validate this token (HMAC with `FORM_SECRET`, 15 min TTL, bound to User-Agent).
+- This provides a lightweight anti-automation layer without user-visible challenges.
