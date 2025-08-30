@@ -51,3 +51,70 @@ python3 -m http.server 8080 --directory ../nebula-agency-static
 
 - Upload the `nebula-agency-static` folder to any static host (S3 + CloudFront, Netlify Drop, GitHub Pages).
 - All animations via CDN (OGL, GSAP). No server required.
+
+## Contact form -> Make.com -> Notion
+
+This project includes a serverless endpoint that forwards form submissions to a Make.com webhook with a secret header. The Make scenario then creates a new row in a Notion database.
+
+### 1) Configure environment variables
+
+Create a `.env` (or configure variables in your hosting provider) with:
+
+```
+MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
+MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
+```
+
+On Vercel, set these in Project Settings → Environment Variables. On Netlify, use Site settings → Environment variables.
+
+### 2) Make.com scenario
+
+1. Add a trigger: Webhooks → Custom webhook. Copy the webhook URL into `MAKE_WEBHOOK_URL`.
+2. Immediately after, add a Filter that checks the secret header:
+   - Left operand: `{{1.headers["x-webhook-secret"]}}`
+   - Condition: equals
+   - Right operand: `YOUR_LONG_RANDOM_SECRET` (must match `MAKE_WEBHOOK_SECRET`)
+3. Add Notion → Create a Database Item.
+   - Connect your Notion account and choose the target database.
+   - Map fields from the webhook payload (sample below).
+
+Payload sent to Make (keys):
+
+```
+name, email, message, company, website, budget, submittedAt, userAgent, ip
+```
+
+Recommended Notion property mapping:
+- Name (Title): `name`
+- Email (Email): `email`
+- Message (Rich text): `message`
+- Company (Rich text): `company`
+- Website (URL/Rich text): `website`
+- Budget (Number): `budget`
+- Submitted At (Date): `submittedAt`
+- User Agent (Rich text): `userAgent`
+- IP (Rich text): `ip`
+
+### 3) Frontend behavior
+
+The form at `src/pages/Contact.jsx` posts to `/api/contact`. In production on Vercel, this resolves to the serverless function at `api/contact.js`, which:
+- Validates the input (name/email/message + honeypot)
+- Adds the `X-Webhook-Secret` header set to `MAKE_WEBHOOK_SECRET`
+- Forwards the JSON to `MAKE_WEBHOOK_URL`
+
+### 4) Local development
+
+- During `npm run dev`, a Vite middleware handles `POST /api/contact` and forwards to Make with the secret. Create `./.env`:
+
+```
+MAKE_WEBHOOK_URL=YOUR_MAKE_CUSTOM_WEBHOOK_URL
+MAKE_WEBHOOK_SECRET=YOUR_LONG_RANDOM_SECRET
+```
+
+Then:
+
+```
+npm run dev
+```
+
+In Make, click “Run once”, then submit the form locally.
