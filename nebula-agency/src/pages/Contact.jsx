@@ -10,142 +10,100 @@ const schema = z.object({
   company: z.string().optional(),
   website: z.string().optional(),
   budget: z.number().min(1000, 'Please select your budget'),
-  hp_field: z.string().max(0).optional(),
+  hp_field: z.string().max(0).optional(), // honeypot anti-spam
 })
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     resolver: zodResolver(schema),
     defaultValues: { budget: 10000 }
   })
-  const budgetValue = watch('budget', 10000)
 
   const onSubmit = async (data) => {
-    if (data.hp_field) return // honeypot
     try {
-      const resp = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("https://hook.eu2.make.com/19fr1x1xt1rxah29g9w8ywaccysejb3z", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       })
-      if (!resp.ok) throw new Error('Failed to send')
-      setSubmitted(true)
-      reset({ budget: 10000 })
-    } catch (e) {
-      alert('There was a problem sending your message. Please try again.')
+
+      if (response.ok) {
+        setSubmitted(true)
+        reset()
+      } else {
+        alert("There was an error submitting the form.")
+      }
+    } catch (err) {
+      console.error("Error:", err)
+      alert("Network error. Please try again later.")
     }
   }
 
+  if (submitted) {
+    return <p className="text-green-600">✅ Thanks! Your message has been sent.</p>
+  }
+
   return (
-    <section id="contact" className="section container">
-      <div className="badge">Contact</div>
-      <h2 className="display">Let's launch something stellar</h2>
-      <p className="subtitle">Share your goals and we'll come back with a roadmap.</p>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <input
+        {...register("name")}
+        placeholder="Your Name"
+        className="border p-2 w-full"
+      />
+      {errors.name && <p className="text-red-500">{errors.name.message}</p>}
 
-      {submitted && (
-        <div className="card success-message" style={{ padding: 24, marginBottom: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
-          <strong style={{ fontSize: '20px', color: '#fff' }}>Message sent successfully!</strong>
-          <p style={{ marginTop: '8px', color: 'rgba(255,255,255,0.8)' }}>We'll be in touch within 1–2 business days.</p>
-        </div>
-      )}
+      <input
+        {...register("email")}
+        placeholder="Your Email"
+        type="email"
+        className="border p-2 w-full"
+      />
+      {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'grid', gap: 20, marginTop: 32, maxWidth: 720 }}>
-        <input type="text" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" {...register('hp_field')} />
-        
-        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-          <div className="input-group">
-            <input 
-              type="text"
-              autoComplete="name"
-              className={`input ${errors.name ? 'error' : ''}`} 
-              placeholder="Your name" 
-              aria-invalid={errors.name ? 'true' : 'false'}
-              {...register('name')} 
-              style={{ paddingLeft: 16 }}
-            />
-            {errors.name && <div className="error-text">{errors.name.message}</div>}
-          </div>
-          <div className="input-group">
-            <input 
-              type="email"
-              autoComplete="email"
-              className={`input ${errors.email ? 'error' : ''}`} 
-              placeholder="Email" 
-              aria-invalid={errors.email ? 'true' : 'false'}
-              {...register('email')} 
-              style={{ paddingLeft: 16 }}
-            />
-            {errors.email && <div className="error-text">{errors.email.message}</div>}
-          </div>
-        </div>
-        
-        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-          <div className="input-group">
-            <input className="input" placeholder="Company (optional)" {...register('company')} style={{ paddingLeft: 16 }} />
-          </div>
-          <div className="input-group">
-            <input className="input" placeholder="Website (optional)" {...register('website')} style={{ paddingLeft: 16 }} />
-          </div>
-        </div>
+      <textarea
+        {...register("message")}
+        placeholder="Your Message"
+        className="border p-2 w-full"
+      />
+      {errors.message && <p className="text-red-500">{errors.message.message}</p>}
 
-        <div style={{ display: 'grid', gap: 8 }}>
-          <label style={{ color: 'rgba(255,255,255,0.9)' }}>
-            Budget: <strong>${new Intl.NumberFormat('en-US').format(budgetValue)}</strong>
-          </label>
-          <input
-            type="range"
-            min={1000}
-            max={100000}
-            step={1000}
-            {...register('budget', { valueAsNumber: true })}
-          />
-          {errors.budget && <div className="error-text">{errors.budget.message}</div>}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
-            <span>$1k</span>
-            <span>$50k</span>
-            <span>$100k+</span>
-          </div>
-        </div>
-        
-        <div className="input-group">
-          <textarea 
-            rows={6} 
-            className={`input ${errors.message ? 'error' : ''}`} 
-            placeholder="Tell us about your project, goals, timeline, and any specific requirements..." 
-            {...register('message')} 
-            style={{ paddingLeft: 16 }}
-          />
-          {errors.message && <div className="error-text">{errors.message.message}</div>}
-        </div>
-        
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
-          <button 
-            className="btn primary" 
-            type="submit" 
-            disabled={isSubmitting}
-            style={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          >
-            {isSubmitting ? (
-              <>
-                <div className="spinner"></div>
-                Sending...
-              </>
-            ) : (
-              'Send message'
-            )}
-          </button>
-          <button 
-            className="btn" 
-            type="reset" 
-            onClick={() => reset()}
-            style={{ minWidth: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            Reset
-          </button>
-        </div>
-      </form>
-    </section>
+      <input
+        {...register("company")}
+        placeholder="Company (optional)"
+        className="border p-2 w-full"
+      />
+
+      <input
+        {...register("website")}
+        placeholder="Website (optional)"
+        className="border p-2 w-full"
+      />
+
+      <input
+        {...register("budget", { valueAsNumber: true })}
+        type="number"
+        placeholder="Budget"
+        className="border p-2 w-full"
+      />
+      {errors.budget && <p className="text-red-500">{errors.budget.message}</p>}
+
+      {/* Hidden honeypot field */}
+      <input
+        {...register("hp_field")}
+        type="text"
+        style={{ display: "none" }}
+      />
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        {isSubmitting ? "Sending..." : "Send Message"}
+      </button>
+    </form>
   )
 }
