@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import './Galaxy.css'
 
 const vertexShader = `
+precision highp float;
 attribute vec2 uv;
 attribute vec2 position;
 
