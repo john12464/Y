@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import './Galaxy.css'
 
 const vertexShader = `
-precision highp float;
+precision mediump float;
 attribute vec2 uv;
 attribute vec2 position;
 
@@ -16,7 +16,7 @@ void main() {
 `
 
 const fragmentShader = `
-precision highp float;
+precision mediump float;
 
 uniform float uTime;
 uniform vec3 uResolution;
@@ -318,8 +318,14 @@ export default function Galaxy({
         ctn.removeEventListener('mousemove', handleMouseMove)
         ctn.removeEventListener('mouseleave', handleMouseLeave)
       }
-      ctn.removeChild(gl.canvas)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      if (gl && gl.canvas && gl.canvas.parentNode === ctn) {
+        ctn.removeChild(gl.canvas)
+      }
+      try {
+        gl.getExtension('WEBGL_lose_context')?.loseContext()
+      } catch (e) {
+        // ignore errors on context loss
+      }
     }
   }, [
     focal,
