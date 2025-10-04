@@ -1,22 +1,24 @@
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl'
-import { useEffect, useRef } from 'react'
-import './Galaxy.css'
+// GalaxyThree.jsx
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+import "./Galaxy.css"; // reuse your css
 
 const vertexShader = `
-precision mediump float;
-attribute vec2 uv;
-attribute vec2 position;
+precision highp float;
 
 varying vec2 vUv;
+attribute vec2 uv;
 
 void main() {
   vUv = uv;
-  gl_Position = vec4(position, 0, 1);
+  // position here is the geometry position (PlaneGeometry covers -1..1)
+  gl_Position = vec4(position.xy, 0.0, 1.0);
 }
-`
+`;
 
+// Fragment shader: identical math to your OGL shader but with bools => floats
 const fragmentShader = `
-precision mediump float;
+precision highp float;
 
 uniform float uTime;
 uniform vec3 uResolution;
@@ -29,13 +31,13 @@ uniform float uSpeed;
 uniform vec2 uMouse;
 uniform float uGlowIntensity;
 uniform float uSaturation;
-uniform bool uMouseRepulsion;
+uniform float uMouseRepulsion; // 0.0 or 1.0
 uniform float uTwinkleIntensity;
 uniform float uRotationSpeed;
 uniform float uRepulsionStrength;
 uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
-uniform bool uTransparent;
+uniform float uTransparent; // 0.0 or 1.0
 
 varying vec2 vUv;
 
@@ -131,11 +133,11 @@ void main() {
   vec2 mouseNorm = uMouse - vec2(0.5);
   
   if (uAutoCenterRepulsion > 0.0) {
-    vec2 centerUV = vec2(0.0, 0.0); // Center in UV space
+    vec2 centerUV = vec2(0.0, 0.0);
     float centerDist = length(uv - centerUV);
     vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
     uv += repulsion * 0.05;
-  } else if (uMouseRepulsion) {
+  } else if (uMouseRepulsion > 0.5) {
     vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
     float mouseDist = length(uv - mousePosUV);
     vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
@@ -160,18 +162,18 @@ void main() {
     col += StarLayer(uv * scale + i * 453.32) * fade;
   }
 
-  if (uTransparent) {
+  if (uTransparent > 0.5) {
     float alpha = length(col);
-    alpha = smoothstep(0.0, 0.3, alpha); // Enhance contrast
-    alpha = min(alpha, 1.0); // Clamp to maximum 1.0
+    alpha = smoothstep(0.0, 0.3, alpha);
+    alpha = min(alpha, 1.0);
     gl_FragColor = vec4(col, alpha);
   } else {
     gl_FragColor = vec4(col, 1.0);
   }
 }
-`
+`;
 
-export default function Galaxy({
+export default function GalaxyThree({
   focal = [0.5, 0.5],
   rotation = [1.0, 0.0],
   starSpeed = 0.5,
@@ -180,152 +182,169 @@ export default function Galaxy({
   disableAnimation = false,
   speed = 1.0,
   mouseInteraction = true,
-  glowIntensity = 0.5,
-  saturation = 0.4,
+  glowIntensity = 0.3,
+  saturation = 0.0,
   mouseRepulsion = true,
   repulsionStrength = 2,
-  twinkleIntensity = 0.5,
+  twinkleIntensity = 0.3,
   rotationSpeed = 0.1,
   autoCenterRepulsion = 0,
   transparent = true,
   ...rest
 }) {
-  const ctnDom = useRef(null)
-  const targetMousePos = useRef({ x: 0.5, y: 0.5 })
-  const smoothMousePos = useRef({ x: 0.5, y: 0.5 })
-  const targetMouseActive = useRef(0.0)
-  const smoothMouseActive = useRef(0.0)
+  const containerRef = useRef(null);
+  const smoothMouse = useRef({ x: 0.5, y: 0.5 });
+  const targetMouse = useRef({ x: 0.5, y: 0.5 });
+  const smoothActive = useRef(0.0);
+  const targetActive = useRef(0.0);
+  const rendererRef = useRef(null);
+  const materialRef = useRef(null);
+  const frameRef = useRef(null);
 
   useEffect(() => {
-    if (!ctnDom.current) return
-    const ctn = ctnDom.current
-    const renderer = new Renderer({
-      alpha: transparent,
-      premultipliedAlpha: false,
-    })
-    const gl = renderer.gl
+    if (!containerRef.current) return;
+    const container = containerRef.current;
 
-    if (transparent) {
-      gl.enable(gl.BLEND)
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-      gl.clearColor(0, 0, 0, 0)
-    } else {
-      gl.clearColor(0, 0, 0, 1)
-    }
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ alpha: transparent, premultipliedAlpha: false });
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    renderer.domElement.style.display = "block";
+    container.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
-    let program
+    // Scene & Camera
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1); // fullscreen quad camera
 
-    function resize() {
-      const scale = 1
-      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale)
-      if (program) {
-        program.uniforms.uResolution.value = new Color(
-          gl.canvas.width,
-          gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        )
+    // Geometry: full-screen plane
+    const geometry = new THREE.PlaneGeometry(2, 2);
+
+    // Uniform defaults
+    const uniforms = {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector3(renderer.domElement.width, renderer.domElement.height, renderer.domElement.width / renderer.domElement.height) },
+      uFocal: { value: new THREE.Vector2(focal[0], focal[1]) },
+      uRotation: { value: new THREE.Vector2(rotation[0], rotation[1]) },
+      uStarSpeed: { value: starSpeed },
+      uDensity: { value: density },
+      uHueShift: { value: hueShift },
+      uSpeed: { value: speed },
+      uMouse: { value: new THREE.Vector2(smoothMouse.current.x, smoothMouse.current.y) },
+      uGlowIntensity: { value: glowIntensity },
+      uSaturation: { value: saturation },
+      uMouseRepulsion: { value: mouseRepulsion ? 1.0 : 0.0 },
+      uTwinkleIntensity: { value: twinkleIntensity },
+      uRotationSpeed: { value: rotationSpeed },
+      uRepulsionStrength: { value: repulsionStrength },
+      uMouseActiveFactor: { value: 0.0 },
+      uAutoCenterRepulsion: { value: autoCenterRepulsion },
+      uTransparent: { value: transparent ? 1.0 : 0.0 }
+    };
+
+    // Material (ShaderMaterial)
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+    materialRef.current = material;
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // Resize helper
+    function onResize() {
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+      renderer.setSize(w, h);
+      if (uniforms.uResolution) {
+        uniforms.uResolution.value.set(renderer.domElement.width, renderer.domElement.height, renderer.domElement.width / renderer.domElement.height);
       }
     }
-    window.addEventListener('resize', resize, false)
-    resize()
+    window.addEventListener("resize", onResize, false);
+    onResize();
 
-    const geometry = new Triangle(gl)
-    program = new Program(gl, {
-      vertex: vertexShader,
-      fragment: fragmentShader,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: {
-          value: new Color(
-            gl.canvas.width,
-            gl.canvas.height,
-            gl.canvas.width / gl.canvas.height
-          ),
-        },
-        uFocal: { value: new Float32Array(focal) },
-        uRotation: { value: new Float32Array(rotation) },
-        uStarSpeed: { value: starSpeed },
-        uDensity: { value: density },
-        uHueShift: { value: hueShift },
-        uSpeed: { value: speed },
-        uMouse: {
-          value: new Float32Array([
-            smoothMousePos.current.x,
-            smoothMousePos.current.y,
-          ]),
-        },
-        uGlowIntensity: { value: glowIntensity },
-        uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
-        uTwinkleIntensity: { value: twinkleIntensity },
-        uRotationSpeed: { value: rotationSpeed },
-        uRepulsionStrength: { value: repulsionStrength },
-        uMouseActiveFactor: { value: 0.0 },
-        uAutoCenterRepulsion: { value: autoCenterRepulsion },
-        uTransparent: { value: transparent },
-      },
-    })
+    // Animation loop
+    let started = performance.now();
+    function animate(now) {
+      frameRef.current = requestAnimationFrame(animate);
 
-    const mesh = new Mesh(gl, { geometry, program })
-    let animateId
-
-    function update(t) {
-      animateId = requestAnimationFrame(update)
       if (!disableAnimation) {
-        program.uniforms.uTime.value = t * 0.001
-        program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0
+        uniforms.uTime.value = now * 0.001;
+        uniforms.uStarSpeed.value = (now * 0.001 * starSpeed) / 10.0;
       }
 
-      const lerpFactor = 0.05
-      smoothMousePos.current.x +=
-        (targetMousePos.current.x - smoothMousePos.current.x) * lerpFactor
-      smoothMousePos.current.y +=
-        (targetMousePos.current.y - smoothMousePos.current.y) * lerpFactor
+      // mouse smoothing
+      const lerp = 0.05;
+      smoothMouse.current.x += (targetMouse.current.x - smoothMouse.current.x) * lerp;
+      smoothMouse.current.y += (targetMouse.current.y - smoothMouse.current.y) * lerp;
+      smoothActive.current += (targetActive.current - smoothActive.current) * lerp;
 
-      smoothMouseActive.current +=
-        (targetMouseActive.current - smoothMouseActive.current) * lerpFactor
+      uniforms.uMouse.value.set(smoothMouse.current.x, smoothMouse.current.y);
+      uniforms.uMouseActiveFactor.value = smoothActive.current;
 
-      program.uniforms.uMouse.value[0] = smoothMousePos.current.x
-      program.uniforms.uMouse.value[1] = smoothMousePos.current.y
-      program.uniforms.uMouseActiveFactor.value = smoothMouseActive.current
-
-      renderer.render({ scene: mesh })
+      renderer.render(scene, camera);
     }
-    animateId = requestAnimationFrame(update)
-    ctn.appendChild(gl.canvas)
+    frameRef.current = requestAnimationFrame(animate);
 
-    function handleMouseMove(e) {
-      const rect = ctn.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width
-      const y = 1.0 - (e.clientY - rect.top) / rect.height
-      targetMousePos.current = { x, y }
-      targetMouseActive.current = 1.0
+    // Mouse events
+    function handleMove(e) {
+      const rect = container.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = 1.0 - (e.clientY - rect.top) / rect.height;
+      targetMouse.current = { x, y };
+      targetActive.current = 1.0;
     }
-
-    function handleMouseLeave() {
-      targetMouseActive.current = 0.0
+    function handleLeave() {
+      targetActive.current = 0.0;
     }
-
     if (mouseInteraction) {
-      ctn.addEventListener('mousemove', handleMouseMove)
-      ctn.addEventListener('mouseleave', handleMouseLeave)
+      container.addEventListener("mousemove", handleMove);
+      container.addEventListener("mouseleave", handleLeave);
     }
 
+    // Cleanup
     return () => {
-      cancelAnimationFrame(animateId)
-      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(frameRef.current);
+      window.removeEventListener("resize", onResize);
       if (mouseInteraction) {
-        ctn.removeEventListener('mousemove', handleMouseMove)
-        ctn.removeEventListener('mouseleave', handleMouseLeave)
+        container.removeEventListener("mousemove", handleMove);
+        container.removeEventListener("mouseleave", handleLeave);
       }
-      if (gl && gl.canvas && gl.canvas.parentNode === ctn) {
-        ctn.removeChild(gl.canvas)
+      renderer.dispose();
+      geometry.dispose();
+      material.dispose();
+      if (renderer.domElement && renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
       }
-      try {
-        gl.getExtension('WEBGL_lose_context')?.loseContext()
-      } catch (e) {
-        // ignore errors on context loss
-      }
+    };
+  }, []); // run once on mount
+
+  // Keep uniforms in sync when props change
+  useEffect(() => {
+    const mat = materialRef.current;
+    if (!mat) return;
+    const u = mat.uniforms;
+    if (u) {
+      u.uFocal.value.set(focal[0], focal[1]);
+      u.uRotation.value.set(rotation[0], rotation[1]);
+      u.uStarSpeed.value = starSpeed;
+      u.uDensity.value = density;
+      u.uHueShift.value = hueShift;
+      u.uSpeed.value = speed;
+      u.uGlowIntensity.value = glowIntensity;
+      u.uSaturation.value = saturation;
+      u.uMouseRepulsion.value = mouseRepulsion ? 1.0 : 0.0;
+      u.uRepulsionStrength.value = repulsionStrength;
+      u.uTwinkleIntensity.value = twinkleIntensity;
+      u.uRotationSpeed.value = rotationSpeed;
+      u.uAutoCenterRepulsion.value = autoCenterRepulsion;
+      u.uTransparent.value = transparent ? 1.0 : 0.0;
     }
   }, [
     focal,
@@ -333,18 +352,16 @@ export default function Galaxy({
     starSpeed,
     density,
     hueShift,
-    disableAnimation,
     speed,
-    mouseInteraction,
     glowIntensity,
     saturation,
     mouseRepulsion,
+    repulsionStrength,
     twinkleIntensity,
     rotationSpeed,
-    repulsionStrength,
     autoCenterRepulsion,
-    transparent,
-  ])
+    transparent
+  ]);
 
-  return <div ref={ctnDom} className="galaxy-container" {...rest} />
-}
+  return <div ref={containerRef} className="galaxy-container" {...rest} />;
+      }
