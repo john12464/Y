@@ -1,8 +1,11 @@
+// Galaxy.jsx (updated)
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 import './Galaxy.css';
 
 const vertexShader = `
+precision highp float;
+
 attribute vec2 uv;
 attribute vec2 position;
 
@@ -15,6 +18,9 @@ void main() {
 `;
 
 const fragmentShader = `
+#ifdef GL_ES
+precision mediump float;
+#endif
 precision highp float;
 
 uniform float uTime;
@@ -28,13 +34,15 @@ uniform float uSpeed;
 uniform vec2 uMouse;
 uniform float uGlowIntensity;
 uniform float uSaturation;
-uniform bool uMouseRepulsion;
+// changed bool -> float for WebGL1 compatibility
+uniform float uMouseRepulsion;
 uniform float uTwinkleIntensity;
 uniform float uRotationSpeed;
 uniform float uRepulsionStrength;
 uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
-uniform bool uTransparent;
+// changed bool -> float
+uniform float uTransparent;
 
 varying vec2 vUv;
 
@@ -134,7 +142,7 @@ void main() {
     float centerDist = length(uv - centerUV);
     vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
     uv += repulsion * 0.05;
-  } else if (uMouseRepulsion) {
+  } else if (uMouseRepulsion > 0.5) {
     vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
     float mouseDist = length(uv - mousePosUV);
     vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
@@ -159,7 +167,7 @@ void main() {
     col += StarLayer(uv * scale + i * 453.32) * fade;
   }
 
-  if (uTransparent) {
+  if (uTransparent > 0.5) {
     float alpha = length(col);
     alpha = smoothstep(0.0, 0.3, alpha);
     alpha = min(alpha, 1.0);
@@ -198,7 +206,14 @@ export default function Galaxy({
   useEffect(() => {
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
+
+    // Create a canvas and request WebGL2 first, fallback to WebGL1
+    const tempCanvas = document.createElement('canvas');
+    const ctx = tempCanvas.getContext('webgl2', { antialias: true }) || tempCanvas.getContext('webgl', { antialias: true });
+
     const renderer = new Renderer({
+      // pass the obtained context to ensure WebGL2 is used when available
+      context: ctx,
       alpha: transparent,
       premultipliedAlpha: false
     });
@@ -217,7 +232,7 @@ export default function Galaxy({
     function resize() {
       const scale = 1;
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
-      if (program) {
+      if (program && program.uniforms && program.uniforms.uResolution) {
         program.uniforms.uResolution.value = new Color(
           gl.canvas.width,
           gl.canvas.height,
@@ -248,15 +263,33 @@ export default function Galaxy({
         },
         uGlowIntensity: { value: glowIntensity },
         uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
+        // pass as floats (0.0 or 1.0)
+        uMouseRepulsion: { value: mouseRepulsion ? 1.0 : 0.0 },
         uTwinkleIntensity: { value: twinkleIntensity },
         uRotationSpeed: { value: rotationSpeed },
         uRepulsionStrength: { value: repulsionStrength },
         uMouseActiveFactor: { value: 0.0 },
         uAutoCenterRepulsion: { value: autoCenterRepulsion },
-        uTransparent: { value: transparent }
+        uTransparent: { value: transparent ? 1.0 : 0.0 }
       }
     });
+
+    // shader compile/link debug logging (useful if Chrome still rejects shader)
+    try {
+      const linked = gl.getProgramParameter(program.program, gl.LINK_STATUS);
+      if (!linked) {
+        console.error('Program link failed:', gl.getProgramInfoLog(program.program));
+      }
+      const attached = gl.getAttachedShaders(program.program) || [];
+      attached.forEach((s) => {
+        const compiled = gl.getShaderParameter(s, gl.COMPILE_STATUS);
+        if (!compiled) {
+          console.error('Shader compile error:', gl.getShaderInfoLog(s));
+        }
+      });
+    } catch (err) {
+      console.warn('Could not read shader logs (non-fatal):', err);
+    }
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId;
@@ -274,6 +307,7 @@ export default function Galaxy({
 
       smoothMouseActive.current += (targetMouseActive.current - smoothMouseActive.current) * lerpFactor;
 
+      // update uniform arrays
       program.uniforms.uMouse.value[0] = smoothMousePos.current.x;
       program.uniforms.uMouse.value[1] = smoothMousePos.current.y;
       program.uniforms.uMouseActiveFactor.value = smoothMouseActive.current;
@@ -281,7 +315,13 @@ export default function Galaxy({
       renderer.render({ scene: mesh });
     }
     animateId = requestAnimationFrame(update);
-    ctn.appendChild(gl.canvas);
+
+    // Append canvas slightly delayed to avoid race on some chrome/android setups
+    setTimeout(() => {
+      if (gl && gl.canvas && !ctn.contains(gl.canvas)) {
+        ctn.appendChild(gl.canvas);
+      }
+    }, 50);
 
     function handleMouseMove(e) {
       const rect = ctn.getBoundingClientRect();
@@ -307,7 +347,9 @@ export default function Galaxy({
         ctn.removeEventListener('mousemove', handleMouseMove);
         ctn.removeEventListener('mouseleave', handleMouseLeave);
       }
-      ctn.removeChild(gl.canvas);
+      try {
+        if (gl && gl.canvas && ctn.contains(gl.canvas)) ctn.removeChild(gl.canvas);
+      } catch (e) {}
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [
@@ -330,4 +372,4 @@ export default function Galaxy({
   ]);
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;
-}
+      }
