@@ -24,7 +24,7 @@ export default function Contact() {
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
     try {
-      const resp = await fetch('/api/contact', {
+      const resp = await fetch('https://hook.eu2.make.com/19fr1x1xt1rxah29g9w8ywaccysejb3z', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
