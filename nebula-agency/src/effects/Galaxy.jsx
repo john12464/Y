@@ -1,4 +1,4 @@
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl'
+import { Renderer, Program, Mesh, Triangle } from 'ogl'
 import { useEffect, useRef } from 'react'
 import './Galaxy.css'
 
@@ -194,14 +194,44 @@ export default function Galaxy({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 })
   const targetMouseActive = useRef(0.0)
   const smoothMouseActive = useRef(0.0)
+  const resizeObserverRef = useRef(null)
+  const rendererRef = useRef(null)
+  const programRef = useRef(null)
 
   useEffect(() => {
     if (!ctnDom.current) return
     const ctn = ctnDom.current
+
+    // WebGL availability guard + graceful fallback background
+    const isWebGLAvailable = () => {
+      try {
+        const canvas = document.createElement('canvas')
+        return !!(
+          canvas.getContext('webgl', { failIfMajorPerformanceCaveat: true }) ||
+          canvas.getContext('experimental-webgl')
+        )
+      } catch {
+        return false
+      }
+    }
+
+    if (!isWebGLAvailable()) {
+      ctn.style.background =
+        'radial-gradient(600px 400px at 50% 40%, rgba(177,140,255,0.12), transparent 60%)'
+      return
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
     const renderer = new Renderer({
       alpha: transparent,
       premultipliedAlpha: false,
+      dpr,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: 'high-performance',
     })
+    rendererRef.current = renderer
     const gl = renderer.gl
 
     if (transparent) {
@@ -215,55 +245,77 @@ export default function Galaxy({
     let program
 
     function resize() {
-      const scale = 1
-      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale)
+      const width = Math.max(1, ctn.clientWidth)
+      const height = Math.max(1, ctn.clientHeight)
+      renderer.setSize(width, height)
       if (program) {
-        program.uniforms.uResolution.value = new Color(
+        program.uniforms.uResolution.value = new Float32Array([
           gl.canvas.width,
           gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        )
+          gl.canvas.width / Math.max(1, gl.canvas.height),
+        ])
       }
     }
+
+    // Attach canvas before measuring to avoid 0x0 sizes in some Chrome layouts
+    ctn.appendChild(gl.canvas)
+
+    // Observe element size changes for robust sizing in Chrome
+    const ro = new ResizeObserver(() => resize())
+    ro.observe(ctn)
+    resizeObserverRef.current = ro
     window.addEventListener('resize', resize, false)
-    resize()
 
     const geometry = new Triangle(gl)
-    program = new Program(gl, {
-      vertex: vertexShader,
-      fragment: fragmentShader,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: {
-          value: new Color(
-            gl.canvas.width,
-            gl.canvas.height,
-            gl.canvas.width / gl.canvas.height
-          ),
+    try {
+      program = new Program(gl, {
+        vertex: vertexShader,
+        fragment: fragmentShader,
+        uniforms: {
+          uTime: { value: 0 },
+          uResolution: {
+            value: new Float32Array([
+              gl.canvas.width,
+              gl.canvas.height,
+              gl.canvas.width / Math.max(1, gl.canvas.height),
+            ]),
+          },
+          uFocal: { value: new Float32Array(focal) },
+          uRotation: { value: new Float32Array(rotation) },
+          uStarSpeed: { value: starSpeed },
+          uDensity: { value: density },
+          uHueShift: { value: hueShift },
+          uSpeed: { value: speed },
+          uMouse: {
+            value: new Float32Array([
+              smoothMousePos.current.x,
+              smoothMousePos.current.y,
+            ]),
+          },
+          uGlowIntensity: { value: glowIntensity },
+          uSaturation: { value: saturation },
+          uMouseRepulsion: { value: mouseRepulsion },
+          uTwinkleIntensity: { value: twinkleIntensity },
+          uRotationSpeed: { value: rotationSpeed },
+          uRepulsionStrength: { value: repulsionStrength },
+          uMouseActiveFactor: { value: 0.0 },
+          uAutoCenterRepulsion: { value: autoCenterRepulsion },
+          uTransparent: { value: transparent },
         },
-        uFocal: { value: new Float32Array(focal) },
-        uRotation: { value: new Float32Array(rotation) },
-        uStarSpeed: { value: starSpeed },
-        uDensity: { value: density },
-        uHueShift: { value: hueShift },
-        uSpeed: { value: speed },
-        uMouse: {
-          value: new Float32Array([
-            smoothMousePos.current.x,
-            smoothMousePos.current.y,
-          ]),
-        },
-        uGlowIntensity: { value: glowIntensity },
-        uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
-        uTwinkleIntensity: { value: twinkleIntensity },
-        uRotationSpeed: { value: rotationSpeed },
-        uRepulsionStrength: { value: repulsionStrength },
-        uMouseActiveFactor: { value: 0.0 },
-        uAutoCenterRepulsion: { value: autoCenterRepulsion },
-        uTransparent: { value: transparent },
-      },
-    })
+      })
+      programRef.current = program
+    } catch (err) {
+      // Fallback if shader compilation fails on some Chrome drivers
+      console.error('Galaxy shader init failed', err)
+      ctn.style.background =
+        'radial-gradient(600px 400px at 50% 40%, rgba(177,140,255,0.12), transparent 60%)'
+      return () => {
+        // Clean up observer/listeners when bailing out early
+        window.removeEventListener('resize', resize)
+        ro.disconnect()
+        try { ctn.removeChild(gl.canvas) } catch {}
+      }
+    }
 
     const mesh = new Mesh(gl, { geometry, program })
     let animateId
@@ -291,7 +343,6 @@ export default function Galaxy({
       renderer.render({ scene: mesh })
     }
     animateId = requestAnimationFrame(update)
-    ctn.appendChild(gl.canvas)
 
     function handleMouseMove(e) {
       const rect = ctn.getBoundingClientRect()
@@ -310,15 +361,32 @@ export default function Galaxy({
       ctn.addEventListener('mouseleave', handleMouseLeave)
     }
 
+    // Handle context lost to avoid a blank canvas on Chrome
+    const onContextLost = (ev) => {
+      ev.preventDefault()
+      try { cancelAnimationFrame(animateId) } catch {}
+      ctn.style.background =
+        'radial-gradient(600px 400px at 50% 40%, rgba(177,140,255,0.12), transparent 60%)'
+    }
+    gl.canvas.addEventListener('webglcontextlost', onContextLost, { passive: false })
+
     return () => {
-      cancelAnimationFrame(animateId)
+      try { cancelAnimationFrame(animateId) } catch {}
       window.removeEventListener('resize', resize)
+      if (resizeObserverRef.current) {
+        try { resizeObserverRef.current.disconnect() } catch {}
+        resizeObserverRef.current = null
+      }
       if (mouseInteraction) {
         ctn.removeEventListener('mousemove', handleMouseMove)
         ctn.removeEventListener('mouseleave', handleMouseLeave)
       }
-      ctn.removeChild(gl.canvas)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      try { gl.canvas.removeEventListener('webglcontextlost', onContextLost) } catch {}
+      try { ctn.removeChild(gl.canvas) } catch {}
+      // Don't forcibly lose context on cleanup; Chrome can treat this as an error
+      // rendererRef.current is allowed to be GC'd
+      rendererRef.current = null
+      programRef.current = null
     }
   }, [
     focal,
