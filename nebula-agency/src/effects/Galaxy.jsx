@@ -28,13 +28,14 @@ uniform float uSpeed;
 uniform vec2 uMouse;
 uniform float uGlowIntensity;
 uniform float uSaturation;
-uniform bool uMouseRepulsion;
+// Use float flags for broader WebGL1/Chrome compatibility
+uniform float uMouseRepulsion;
 uniform float uTwinkleIntensity;
 uniform float uRotationSpeed;
 uniform float uRepulsionStrength;
 uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
-uniform bool uTransparent;
+uniform float uTransparent;
 
 varying vec2 vUv;
 
@@ -134,7 +135,7 @@ void main() {
     float centerDist = length(uv - centerUV);
     vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
     uv += repulsion * 0.05;
-  } else if (uMouseRepulsion) {
+  } else if (uMouseRepulsion > 0.5) {
     vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
     float mouseDist = length(uv - mousePosUV);
     vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
@@ -159,7 +160,7 @@ void main() {
     col += StarLayer(uv * scale + i * 453.32) * fade;
   }
 
-  if (uTransparent) {
+  if (uTransparent > 0.5) {
     float alpha = length(col);
     alpha = smoothstep(0.0, 0.3, alpha); // Enhance contrast
     alpha = min(alpha, 1.0); // Clamp to maximum 1.0
@@ -218,11 +219,11 @@ export default function Galaxy({
       const scale = 1
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale)
       if (program) {
-        program.uniforms.uResolution.value = new Color(
+        program.uniforms.uResolution.value = new Float32Array([
           gl.canvas.width,
           gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        )
+          gl.canvas.width / gl.canvas.height,
+        ])
       }
     }
     window.addEventListener('resize', resize, false)
@@ -235,11 +236,11 @@ export default function Galaxy({
       uniforms: {
         uTime: { value: 0 },
         uResolution: {
-          value: new Color(
+          value: new Float32Array([
             gl.canvas.width,
             gl.canvas.height,
-            gl.canvas.width / gl.canvas.height
-          ),
+            gl.canvas.width / gl.canvas.height,
+          ]),
         },
         uFocal: { value: new Float32Array(focal) },
         uRotation: { value: new Float32Array(rotation) },
@@ -255,13 +256,14 @@ export default function Galaxy({
         },
         uGlowIntensity: { value: glowIntensity },
         uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
+        // Pass as float flags (1.0 or 0.0)
+        uMouseRepulsion: { value: mouseRepulsion ? 1.0 : 0.0 },
         uTwinkleIntensity: { value: twinkleIntensity },
         uRotationSpeed: { value: rotationSpeed },
         uRepulsionStrength: { value: repulsionStrength },
         uMouseActiveFactor: { value: 0.0 },
         uAutoCenterRepulsion: { value: autoCenterRepulsion },
-        uTransparent: { value: transparent },
+        uTransparent: { value: transparent ? 1.0 : 0.0 },
       },
     })
 
