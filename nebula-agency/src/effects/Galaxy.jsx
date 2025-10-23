@@ -44,6 +44,19 @@ varying vec2 vUv;
 #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
 #define PERIOD 3.0
 
+// WebGL1-safe atan2 replacement
+float atan2Safe(float y, float x) {
+  // Handle x ~ 0 to avoid division by zero
+  if (abs(x) < 1e-8) {
+    return sign(y) * 1.57079632679; // +/- PI/2
+  }
+  float a = atan(y / x);
+  if (x < 0.0) {
+    return a + (y >= 0.0 ? 3.14159265359 : -3.14159265359);
+  }
+  return a;
+}
+
 float Hash21(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
   p += dot(p, p + 45.32);
@@ -102,7 +115,7 @@ vec3 StarLayer(vec2 uv) {
       float grn = min(red, blu) * seed;
       vec3 base = vec3(red, grn, blu);
       
-      float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+      float hue = atan2Safe(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
       hue = fract(hue + uHueShift / 360.0);
       float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
       float val = max(max(base.r, base.g), base.b);
@@ -227,6 +240,8 @@ export default function Galaxy({
       }
     }
     window.addEventListener('resize', resize, false)
+    // Append canvas before initial sizing so dimensions are correct
+    ctn.appendChild(gl.canvas)
     resize()
 
     const geometry = new Triangle(gl)
@@ -293,7 +308,6 @@ export default function Galaxy({
       renderer.render({ scene: mesh })
     }
     animateId = requestAnimationFrame(update)
-    ctn.appendChild(gl.canvas)
 
     function handleMouseMove(e) {
       const rect = ctn.getBoundingClientRect()
@@ -312,9 +326,14 @@ export default function Galaxy({
       ctn.addEventListener('mouseleave', handleMouseLeave)
     }
 
+    // Observe size changes for more reliable resizing in Chrome
+    const ro = new ResizeObserver(() => resize())
+    ro.observe(ctn)
+
     return () => {
       cancelAnimationFrame(animateId)
       window.removeEventListener('resize', resize)
+      ro.disconnect()
       if (mouseInteraction) {
         ctn.removeEventListener('mousemove', handleMouseMove)
         ctn.removeEventListener('mouseleave', handleMouseLeave)
