@@ -4,6 +4,7 @@ import { FiZap, FiLayers, FiTrendingUp } from 'react-icons/fi'
 import { lazy, Suspense } from 'react'
 import TrustBar from '../components/TrustBar.jsx'
 import Process from '../components/Process.jsx'
+import SEO from '../components/SEO.jsx'
 
 const Galaxy = lazy(() => import('../effects/Galaxy.jsx'))
 const Cubes = lazy(() => import('../animations/Cubes.jsx'))
@@ -17,6 +18,34 @@ const features = [
 export default function Home() {
   return (
     <div>
+      <SEO 
+        title="Home"
+        description="Nebula Agency builds immersive, high-performance websites and brands."
+        path="/"
+        image="/logo.svg"
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Nebula Agency',
+            url: 'https://nebula-agency.example.com',
+            logo: 'https://nebula-agency.example.com/logo.svg'
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Nebula Agency',
+            url: 'https://nebula-agency.example.com'
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nebula-agency.example.com/' }
+            ]
+          }
+        ]}
+      />
       <section className="section container">
         <div className="hero-stack card" style={{ position: 'relative', minHeight: '56vh', display: 'grid', placeItems: 'center', padding: '48px', overflow: 'hidden' }}>
           <Suspense fallback={null}>
