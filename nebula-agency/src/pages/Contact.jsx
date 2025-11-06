@@ -49,7 +49,7 @@ export default function Contact() {
           '@context': 'https://schema.org',
           '@type': 'ContactPage',
           name: 'Contact · Nebula Agency',
-          url: 'https://nebula-agency.example.com/contact',
+          url: 'https://nebulaagency.net/contact',
           breadcrumb: {
             '@type': 'BreadcrumbList',
             itemListElement: [
