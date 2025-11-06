@@ -43,7 +43,7 @@ export default function About() {
           '@context': 'https://schema.org',
           '@type': 'AboutPage',
           name: 'About · Nebula Agency',
-          url: 'https://nebula-agency.example.com/about',
+          url: 'https://nebulaagency.net/about',
           breadcrumb: {
             '@type': 'BreadcrumbList',
             itemListElement: [
