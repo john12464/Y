@@ -40,7 +40,7 @@ export default function WhyChooseUs() {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
           name: 'Why choose us · Nebula Agency',
-          url: 'https://nebula-agency.example.com/why-choose-us',
+          url: 'https://nebulaagency.net/why-choose-us',
           breadcrumb: {
             '@type': 'BreadcrumbList',
             itemListElement: [
