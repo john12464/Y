@@ -2,13 +2,13 @@ import { Helmet } from 'react-helmet-async'
 
 const site = {
   name: 'Nebula Agency',
-  domain: 'https://nebula-agency.example.com',
+  domain: 'https://nebulaagency.net',
   twitter: '@nebula_agency',
 }
 
 export default function SEO({
   title = site.name,
-  description = 'Futuristic digital agency crafting immersive brands and websites.',
+  description = 'Nebula Agency is a futuristic digital studio crafting immersive, galaxy-inspired websites and brands. We blend creativity, technology, and design to help businesses shine across the digital universe. ',
   path = '/',
   image = '/logo.svg',
   type = 'website',
