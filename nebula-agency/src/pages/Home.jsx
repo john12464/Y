@@ -28,14 +28,14 @@ export default function Home() {
             '@context': 'https://schema.org',
             '@type': 'Organization',
             name: 'Nebula Agency',
-            url: 'https://nebula-agency.example.com',
-            logo: 'https://nebula-agency.example.com/logo.svg'
+            url: 'https://nebulaagency.net',
+            logo:'https://ibb.co/5g3Kq184'
           },
           {
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'Nebula Agency',
-            url: 'https://nebula-agency.example.com'
+            url: 'https://nebulaagency.net'
           },
           {
             '@context': 'https://schema.org',
