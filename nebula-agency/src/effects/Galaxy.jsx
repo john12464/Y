@@ -28,13 +28,14 @@ uniform float uSpeed;
 uniform vec2 uMouse;
 uniform float uGlowIntensity;
 uniform float uSaturation;
-uniform bool uMouseRepulsion;
+// Use float flags for broader WebGL1/Chrome compatibility
+uniform float uMouseRepulsion;
 uniform float uTwinkleIntensity;
 uniform float uRotationSpeed;
 uniform float uRepulsionStrength;
 uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
-uniform bool uTransparent;
+uniform float uTransparent;
 
 varying vec2 vUv;
 
@@ -42,6 +43,19 @@ varying vec2 vUv;
 #define STAR_COLOR_CUTOFF 0.2
 #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
 #define PERIOD 3.0
+
+// WebGL1-safe atan2 replacement
+float atan2Safe(float y, float x) {
+  // Handle x ~ 0 to avoid division by zero
+  if (abs(x) < 1e-8) {
+    return sign(y) * 1.57079632679; // +/- PI/2
+  }
+  float a = atan(y / x);
+  if (x < 0.0) {
+    return a + (y >= 0.0 ? 3.14159265359 : -3.14159265359);
+  }
+  return a;
+}
 
 float Hash21(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -101,7 +115,7 @@ vec3 StarLayer(vec2 uv) {
       float grn = min(red, blu) * seed;
       vec3 base = vec3(red, grn, blu);
       
-      float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+      float hue = atan2Safe(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
       hue = fract(hue + uHueShift / 360.0);
       float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
       float val = max(max(base.r, base.g), base.b);
@@ -134,7 +148,7 @@ void main() {
     float centerDist = length(uv - centerUV);
     vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
     uv += repulsion * 0.05;
-  } else if (uMouseRepulsion) {
+  } else if (uMouseRepulsion > 0.5) {
     vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
     float mouseDist = length(uv - mousePosUV);
     vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
@@ -159,7 +173,7 @@ void main() {
     col += StarLayer(uv * scale + i * 453.32) * fade;
   }
 
-  if (uTransparent) {
+  if (uTransparent > 0.5) {
     float alpha = length(col);
     alpha = smoothstep(0.0, 0.3, alpha); // Enhance contrast
     alpha = min(alpha, 1.0); // Clamp to maximum 1.0
@@ -218,14 +232,16 @@ export default function Galaxy({
       const scale = 1
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale)
       if (program) {
-        program.uniforms.uResolution.value = new Color(
+        program.uniforms.uResolution.value = new Float32Array([
           gl.canvas.width,
           gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        )
+          gl.canvas.width / gl.canvas.height,
+        ])
       }
     }
     window.addEventListener('resize', resize, false)
+    // Append canvas before initial sizing so dimensions are correct
+    ctn.appendChild(gl.canvas)
     resize()
 
     const geometry = new Triangle(gl)
@@ -235,11 +251,11 @@ export default function Galaxy({
       uniforms: {
         uTime: { value: 0 },
         uResolution: {
-          value: new Color(
+          value: new Float32Array([
             gl.canvas.width,
             gl.canvas.height,
-            gl.canvas.width / gl.canvas.height
-          ),
+            gl.canvas.width / gl.canvas.height,
+          ]),
         },
         uFocal: { value: new Float32Array(focal) },
         uRotation: { value: new Float32Array(rotation) },
@@ -255,13 +271,14 @@ export default function Galaxy({
         },
         uGlowIntensity: { value: glowIntensity },
         uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
+        // Pass as float flags (1.0 or 0.0)
+        uMouseRepulsion: { value: mouseRepulsion ? 1.0 : 0.0 },
         uTwinkleIntensity: { value: twinkleIntensity },
         uRotationSpeed: { value: rotationSpeed },
         uRepulsionStrength: { value: repulsionStrength },
         uMouseActiveFactor: { value: 0.0 },
         uAutoCenterRepulsion: { value: autoCenterRepulsion },
-        uTransparent: { value: transparent },
+        uTransparent: { value: transparent ? 1.0 : 0.0 },
       },
     })
 
@@ -291,7 +308,6 @@ export default function Galaxy({
       renderer.render({ scene: mesh })
     }
     animateId = requestAnimationFrame(update)
-    ctn.appendChild(gl.canvas)
 
     function handleMouseMove(e) {
       const rect = ctn.getBoundingClientRect()
@@ -310,9 +326,14 @@ export default function Galaxy({
       ctn.addEventListener('mouseleave', handleMouseLeave)
     }
 
+    // Observe size changes for more reliable resizing in Chrome
+    const ro = new ResizeObserver(() => resize())
+    ro.observe(ctn)
+
     return () => {
       cancelAnimationFrame(animateId)
       window.removeEventListener('resize', resize)
+      ro.disconnect()
       if (mouseInteraction) {
         ctn.removeEventListener('mousemove', handleMouseMove)
         ctn.removeEventListener('mouseleave', handleMouseLeave)

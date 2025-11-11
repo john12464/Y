@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { FiZap, FiUsers, FiGlobe, FiAward, FiTrendingUp, FiHeart } from 'react-icons/fi'
+import SEO from '../components/SEO.jsx'
 
 const stats = [
   { label: 'Custom build', value: 100, suffix: '%' },
@@ -33,6 +34,25 @@ function Counter({ value, suffix = '' }) {
 export default function About() {
   return (
     <div>
+      <SEO 
+        title="About"
+        description="Learn about Nebula Agency—our team, values, and how we deliver results."
+        path="/about"
+        image="/logo.svg"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'AboutPage',
+          name: 'About · Nebula Agency',
+          url: 'https://nebulaagency.net/about',
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nebula-agency.example.com/' },
+              { '@type': 'ListItem', position: 2, name: 'About', item: 'https://nebula-agency.example.com/about' }
+            ]
+          }
+        }}
+      />
       <section className="section container">
         <div className="badge">About</div>
         <h2 className="display">We blend design, code, and cosmos</h2>

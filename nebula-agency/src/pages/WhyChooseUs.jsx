@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import SEO from '../components/SEO.jsx'
 import { FiCode, FiFeather, FiShield, FiCpu, FiCompass, FiHeart, FiZap, FiUsers, FiGlobe, FiAward, FiTrendingUp, FiClock } from 'react-icons/fi'
 
 const items = [
@@ -30,6 +31,25 @@ const process = [
 export default function WhyChooseUs() {
   return (
     <div>
+      <SEO
+        title="Why choose us"
+        description="See why Nebula Agency stands out—performance, reliability, and growth-focused results."
+        path="/why-choose-us"
+        image="/logo.svg"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Why choose us · Nebula Agency',
+          url: 'https://nebulaagency.net/why-choose-us',
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nebula-agency.example.com/' },
+              { '@type': 'ListItem', position: 2, name: 'Why choose us', item: 'https://nebula-agency.example.com/why-choose-us' }
+            ]
+          }
+        }}
+      />
       <section className="section container">
         <div className="badge">Why choose us</div>
         <h2 className="display">Design that moves. Code that scales.</h2>

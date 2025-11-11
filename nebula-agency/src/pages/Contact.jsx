@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import SEO from '../components/SEO.jsx'
 
 const schema = z.object({
   name: z.string().min(2, 'Please enter your name'),
@@ -24,7 +25,7 @@ export default function Contact() {
   const onSubmit = async (data) => {
     if (data.hp_field) return // honeypot
     try {
-      const resp = await fetch('/api/contact', {
+      const resp = await fetch('https://hook.eu2.make.com/19fr1x1xt1rxah29g9w8ywaccysejb3z', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -38,7 +39,27 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="section container">
+    <>
+      <SEO
+        title="Contact"
+        description="Contact Nebula Agency. Tell us about your project and goals."
+        path="/contact"
+        image="/logo.svg"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: 'Contact · Nebula Agency',
+          url: 'https://nebulaagency.net/contact',
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nebula-agency.example.com/' },
+              { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://nebula-agency.example.com/contact' }
+            ]
+          }
+        }}
+      />
+      <section id="contact" className="section container">
       <div className="badge">Contact</div>
       <h2 className="display">Let's launch something stellar</h2>
       <p className="subtitle">Share your goals and we'll come back with a roadmap.</p>
@@ -147,5 +168,6 @@ export default function Contact() {
         </div>
       </form>
     </section>
+    </>
   )
 }
